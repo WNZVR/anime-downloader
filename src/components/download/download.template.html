@@ -4,13 +4,13 @@
       <h2>Downloads</h2>
       <span flex></span>
 
-      <md-button class="md-icon-button" ng-disabled="$root.isDownloading" ng-click="download.start()">
+      <md-button class="md-icon-button" ng-disabled="download.isDownloading" ng-click="download.start()">
         <md-icon md-font-library="material-icons" aria-label="Start" alt="Start">
           play_arrow
         </md-icon>
       </md-button>
 
-      <md-button class="md-icon-button md-warn" ng-disabled="!$root.isDownloading" ng-click="download.stop()">
+      <md-button class="md-icon-button md-warn" ng-disabled="!download.isDownloading" ng-click="download.stop()">
         <md-icon md-font-library="material-icons" aria-label="Stop" alt="Stop">
           stop 
         </md-icon>
@@ -37,20 +37,21 @@
 
             <div class="md-list-item-text" flex="" layout="column">
               <h4 class="download-item-title">
+                {{ anime.totalPercentage === 0 ? '' : '*' }}
                 {{ anime.title }}
               </h4>
               <h5 class="download-item-episodes">
                 Episode{{ anime.totalDownloads >= 1 ? 's ' + anime.episodes[0] + ' / ' + anime.episodes[anime.episodes.length - 1] : ' ' + anime.episodes[0] }}
               </h5>
-              <h6>
+              <h6 class="download-item-infos" ng-hide="anime.totalPercentage === 0">
                 {{ anime.download.currDlSpeed }} MB/s
               </h6>
             </div>
 
-            <md-progress-circular ng-hide="anime.totalPercentage === 0" md-mode="determinate" md-diameter="35" value="{{ anime.totalPercentage }}">
+            <md-progress-circular ng-hide="anime.totalPercentage === 0" md-mode="determinate" md-diameter="40" value="{{ anime.totalPercentage }}">
             </md-progress-circular>
 
-            <md-button class="md-icon-button md-secondary" ng-hide="$root.isDownloading" ng-click="download.delete(anime.link)">
+            <md-button class="md-icon-button md-secondary" ng-hide="download.isDownloading" ng-click="download.delete(anime.link)">
               <md-icon md-font-library="material-icons" aria-label="Delete">
                 delete
               </md-icon>

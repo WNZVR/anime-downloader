@@ -5,12 +5,14 @@ class LoadController {
   constructor (
     $mdDialog,
     $state,
+    $rootScope,
     DirectoryService,
     AnimeService,
     SettingsService
   ) {
     this._$mdDialog = $mdDialog
     this._$state = $state
+    this._$rootScope = $rootScope
     this._directoryService = DirectoryService
     this._animeService = AnimeService
     this._settingsService = SettingsService
@@ -25,6 +27,8 @@ class LoadController {
   }
 
   async init () {
+    this._$rootScope.updates = undefined
+
     let animeList = this._animeService.animeList
     if (!animeList.length) {
       animeList = await scraper.getList()
@@ -41,6 +45,7 @@ class LoadController {
 LoadController.$inject = [
   '$mdDialog',
   '$state',
+  '$rootScope',
   'DirectoryService',
   'AnimeService',
   'SettingsService'

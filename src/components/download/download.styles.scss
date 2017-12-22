@@ -30,9 +30,11 @@
     .download-item-title {
       margin: 0px;
       padding: 4px;
+      padding-bottom: 0px;
     }
 
-    .download-item-episodes {
+    .download-item-episodes,
+    .download-item-infos {
       margin: 0px;
       padding: 4px;
       font-weight: normal;
