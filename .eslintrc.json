@@ -1,0 +1,16 @@
+{
+  "extends": "standard",
+  "parser": "babel-eslint",
+  "plugins": ["angular"],
+  "rules": {
+    "arrow-parens": [2, "as-needed"],
+    "comma-dangle": [2, "never"],
+    "eol-last": [2, "always"],
+    "max-len": [2, 100, 2],
+    "object-curly-spacing": [2, "always"],
+    "object-property-newline": 2,
+    "no-unused-vars": 2,
+    "prefer-const": 2,
+    "quotes": [2, "single"]
+  }
+}

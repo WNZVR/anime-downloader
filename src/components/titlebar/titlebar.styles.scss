@@ -1,0 +1,15 @@
+.titlebar-container {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-app-region: drag;
+
+  button {
+    -webkit-app-region: no-drag;
+  }
+}
+
+@media (max-width: 500px) {
+  .titlebar-title {
+    opacity: 0;
+  }
+}

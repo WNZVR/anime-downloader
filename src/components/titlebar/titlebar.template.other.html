@@ -1,0 +1,15 @@
+<md-toolbar class="titlebar-container md-whiteframe-4dp">
+  <div class="md-toolbar-tools" layout="row reverse">
+    <h2 class="hide-xs" md-truncuate="" flex="">
+      Anime Downloader
+    </h2>
+    <div class="titlebar-update-wrapper" ng-if="$root.updates !== undefined" layout="row" layout-align="center">
+      <span>
+        {{ $root.updates }}&nbsp;
+      </span>
+      <md-icon md-font-library="material-icons" alt="Updates">
+        update
+      </md-icon>
+    </div>
+  </div>
+</md-toolbar>

@@ -1,0 +1,61 @@
+<md-dialog class="download-dialog" aria-label="Downloads">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>Downloads</h2>
+      <span flex></span>
+
+      <md-button class="md-icon-button" ng-disabled="$root.isDownloading" ng-click="download.start()">
+        <md-icon md-font-library="material-icons" aria-label="Start" alt="Start">
+          play_arrow
+        </md-icon>
+      </md-button>
+
+      <md-button class="md-icon-button md-warn" ng-disabled="!$root.isDownloading" ng-click="download.stop()">
+        <md-icon md-font-library="material-icons" aria-label="Stop" alt="Stop">
+          stop 
+        </md-icon>
+      </md-button>
+
+      <md-button class="md-icon-button" ng-click="download.cancel()">
+        <md-icon md-font-library="material-icons" aria-label="Close" alt="Start">
+          close
+        </md-icon>
+      </md-button>
+    </div>
+  </md-toolbar>
+  <md-subheader layout-padding>
+    <i class="download-path">
+      Animes are downloaded in <strong ng-click="download.clickPath()">{{ download.displayPath }}</strong>
+    </i>
+  </md-subheader>
+  <md-dialog-content ng-cloak>
+    <md-content>
+      <md-divider></md-divider>
+      <section class="download-list" layout-padding>
+        <md-list>
+          <md-list-item class="download-item" layout-margin ng-repeat="anime in download.animes">
+
+            <div class="md-list-item-text" flex="" layout="column">
+              <h4 class="download-item-title">
+                {{ anime.title }}
+              </h4>
+              <h6 class="download-item-episodes">
+                Episode{{ anime.totalDownloads >= 1 ? 's ' + anime.episodes[0] + ' / ' + anime.episodes[anime.episodes.length - 1] : ' ' + anime.episodes[0] }}
+              </h6>
+            </div>
+
+            <md-progress-circular ng-hide="anime.totalPercentage === 0" md-mode="determinate" md-diameter="35" value="{{ anime.totalPercentagae }}">
+            </md-progress-circular>
+
+            <md-button class="md-icon-button md-secondary" ng-hide="$root.isDownloading" ng-click="download.delete(anime.link)">
+              <md-icon md-font-library="material-icons" aria-label="Delete">
+                delete
+              </md-icon>
+            </md-button>
+
+          </md-list-item>
+        </md-list>
+      </section>
+    </md-content>
+  </md-dialog-content>
+</md-dialog>

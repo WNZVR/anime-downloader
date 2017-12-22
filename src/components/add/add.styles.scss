@@ -1,0 +1,15 @@
+.add-dialog {
+  width: 480px;
+
+  .md-dialog-content {
+    padding-bottom: 0px;
+  }
+
+  .error-message {
+    font-size: 12px;
+    display: -webkit-box;
+    height: 21px;
+    color: rgb(221, 44, 0);
+    margin-top: 8px;
+  }
+}

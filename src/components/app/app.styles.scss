@@ -1,0 +1,45 @@
+$scrollbar-webkit-bg: rgba(0, 0, 0, 0.4);
+
+body {
+  margin: 0 !important;
+}
+
+::-webkit-scrollbar {
+  width: 14px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $scrollbar-webkit-bg;
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 7px;
+}
+
+::-webkit-scrollbar-track-piece {
+  background-color: transparent;
+  border: 3px solid transparent;
+  border-radius: 7px;
+}
+
+.main-container {
+  height: calc(100vh - 64px);
+  text-rendering: optimizeLegibility;
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+@media (max-width: 959px) and (min-width: 0) and (orientation: portrait) {
+  .main-container {
+    height: calc(100vh - 56px);
+  }
+}
+
+@media (max-width: 959px) and (min-width: 0) and (orientation: landscape) {
+  .main-container {
+    height: calc(100vh - 48px);
+  }
+}
+
+md-dialog {
+  max-width: 100%;
+}

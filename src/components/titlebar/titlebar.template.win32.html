@@ -1,0 +1,31 @@
+<md-toolbar class="titlebar-container md-whiteframe-4dp">
+  <div class="md-toolbar-tools">
+    <h2 class="hide-xs" md-truncuate="" flex="">
+      Anime Downloader
+    </h2>
+    <div class="titlebar-update-wrapper" ng-if="$root.updates !== undefined" layout="row" layout-align="center">
+      <span>
+        {{ $root.updates }}&nbsp;
+      </span>
+      <md-icon md-font-library="material-icons" alt="Updates">
+        update
+      </md-icon>
+      &nbsp;
+    </div>
+    <md-button class="md-icon-button" aria-label="Minimize" ng-click="titlebar.minimize();">
+      <md-icon md-font-library="material-icons" alt="Minimize">
+        remove
+      </md-icon>
+    </md-button>
+    <md-button class="md-icon-button" aria-label="Maxmimize" ng-click="titlebar.maximize();">
+      <md-icon md-font-library="material-icons" alt="Maxmimize">
+        crop_square
+      </md-icon>
+    </md-button>
+    <md-button class="md-icon-button" aria-label="Close" ng-click="titlebar.close();">
+      <md-icon md-font-library="material-icons" alt="Close">
+        close
+      </md-icon>
+    </md-button>
+  </div>
+</md-toolbar>

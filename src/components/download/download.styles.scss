@@ -1,0 +1,38 @@
+.download-dialog {
+  width: 480px;
+
+  .md-subheader-inner {
+    padding: 4px;
+  }
+
+  .download-path {
+    font-weight: normal;
+
+    strong {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+
+  section.download-list {
+    overflow: auto;
+    overflow-x: hidden;
+    max-height: 35vh;
+  }
+
+  .download-item {
+    padding: 0px;
+    margin: 0px;
+
+    .download-item-title {
+      margin: 0px;
+      padding: 4px;
+    }
+
+    .download-item-episodes {
+      margin: 0px;
+      padding: 4px;
+      font-weight: normal;
+    }
+  }
+}

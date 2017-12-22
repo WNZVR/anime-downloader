@@ -1,0 +1,43 @@
+<md-fab-speed-dial class="fab-container fab-speed-dail md-accent md-scale" md-open="false" md-direction="up">
+  <md-fab-trigger>
+    <md-button aria-label="menu" class="md-fab md-primary">
+      <md-icon md-font-library="material-icons" aria-label="Menu" alt="Menu">menu</md-icon>
+    </md-button>
+  </md-fab-trigger>
+  <md-fab-actions>
+    <md-button aria-label="Add" class="md-fab md-raised md-mini" ng-click="home.changeDirectory()">
+      <md-tooltip md-direction="left">Change Directory</md-tooltip>
+      <md-icon md-font-library="material-icons" aria-label="Path" alt="Path">folder</md-icon>
+    </md-button>
+    <md-button aria-label="Path" class="md-fab md-raised md-mini" ng-click="home.addAnime()">
+      <md-tooltip md-direction="left">Add Anime</md-tooltip>
+      <md-icon md-font-library="material-icons" aria-label="Path" alt="Path">add</md-icon>
+    </md-button>
+    <md-button aria-label="Refresh" class="md-fab md-raised md-mini" ng-click="home.refreshAnime()">
+      <md-tooltip md-direction="left">Refresh</md-tooltip>
+      <md-icon md-font-library="material-icons" aria-label="Refresh" alt="Refresh">refresh</md-icon>
+    </md-button>
+    <md-button aria-label="Downloads" class="md-fab md-raised md-mini" ng-click="home.downloadAnime()">
+      <md-tooltip md-direction="left">Downloads</md-tooltip>
+      <md-icon md-font-library="material-icons" aria-label="Downloads" alt="Downloads">file_download</md-icon>
+    </md-button>
+  </md-fab-actions>
+</md-fab-speed-dial>
+
+<div class="anime-container">
+  <div class="anime-grid-list" flex layout-align="space-between center">
+    <div class="anime-block" ng-repeat="anime in home.foundAnimes | orderBy: 'title'">
+      <img class="anime-image layout-fill" ng-mousedown="home.contextMenu($event, anime.link);" md-whiteframe="{{height}}" ng-init="height = 3" ng-mouseenter="height = 6" ng-mouseleave="height = 3"
+        ng-src="{{ anime.images[1] }}" alt="{{ anime.title | lowercase }} cover">
+      <div class="anime-block-footer">
+        <p class="anime-title" flex>
+          {{ anime.title | uppercase }}
+        </p>
+        <p class="anime-videos">
+          {{ anime.episodes.length }}
+          {{ anime.episodes.length == 1 ? ' video' : ' videos' }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
