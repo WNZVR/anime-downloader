@@ -12,22 +12,21 @@ const homePath = app.getPath('home')
 const toMB = value => (value / 1024 / 1024).toFixed(2)
 
 class DownloadController {
-  constructor ($mdDialog, $scope, $rootScope, AnimeService, DirectoryService) {
+  constructor ($mdDialog, $scope, AnimeService, DirectoryService) {
     'ngInject'
 
     this._$mdDialog = $mdDialog
     this._$scope = $scope
-    this._$rootScope = $rootScope
     this._animeService = AnimeService
     this._directoryService = DirectoryService
+
+    const { foundAnimes } = this._animeService
 
     this.path = this._directoryService.path
     this.displayPath = this.path.startsWith(homePath)
       ? this.path.replace(homePath, '~')
       : this.path
-
-    const { foundAnimes } = this._animeService
-
+    this.isDownloading = false
     this.pendingCancel = false
     this.animes = foundAnimes.map(anime => ({
       ...anime,
@@ -48,12 +47,15 @@ class DownloadController {
   }
 
   cancel () {
-    this._$mdDialog.hide()
+    if (this.isDownloading) this.stop()
+    process.nextTick(() => {
+      this._$mdDialog.hide()
+    })
   }
 
   delete (target) {
     // This shouldn't happen but we'll make sure it doesn't.
-    if (!this._$rootScope.isDownloading) {
+    if (!this.isDownloading) {
       const anime = this.animes.find(({ link }) => link === target)
       if (anime) this.animes.splice(this.animes.indexOf(anime), 1)
     }
@@ -61,20 +63,35 @@ class DownloadController {
 
   start () {
     this.path = this._directoryService.path
-    if (!this._$rootScope.isDownloading) {
-      this.download()
-    }
+    // This shouldn't happen but we'll make sure it doesn't.
+    if (!this.isDownloading) this.download()
   }
 
   stop () {
-    if (!this.pendingCancel && this._$rootScope.isDownloading) {
+    if (!this.pendingCancel && this.isDownloading) {
       this.pendingCancel = true
+    }
+  }
+
+  resetValues () {
+    // For the first anime in the list.
+    this.animes[0].totalPercentage = 0
+    this.animes[0].download = {
+      fileSize: null,
+      currFileSize: null,
+      currDlSpeed: null
+    }
+  }
+
+  reloadScope () {
+    if (!this._$scope.$$phase) {
+      this._$scope.$apply()
     }
   }
 
   async download () {
     if (!this.animes.length) {
-      this._$rootScope.isDownloading = false
+      this.isDownloading = false
       return
     }
     const currentAnime = this.animes[0]
@@ -86,44 +103,42 @@ class DownloadController {
     const { link, episodes } = currentAnime
     const downloadUrl = unescape(await scraper.getDownload(link, episodes[0]))
     const episodeDir = resolve(this.path, link, `Episode ${episodes[0]}.mp4`)
-    this._$rootScope.isDownloading = true
+    this.isDownloading = true
     const fsStream = fs.createWriteStream(episodeDir)
     const download = progress(request(downloadUrl))
+
+    if (!fs.existsSync(episodeDir)) fs.closeSync(fs.openSync(episodeDir))
 
     download.pipe(fsStream)
 
     download.on('progress', ({ percent, speed, size }) => {
       if (this.pendingCancel) {
-        // TODO: find a way to make this stop button to work.
-        console.log(download)
-        // Resetting values back to default.
-        this.animes[0].totalPercentage = 0
-        this.pendingCancel = false
-        this._$rootScope.isDownloading = false
-        process.nextTick(() => {
-          fsStream.end()
-          if (fs.existsSync(episodeDir)) fs.unlinkSync(episodeDir)
-        })
+        download.abort()
+        return
       }
+
       const downloadIndex =
         currentAnime.totalDownloads - currentAnime.episodes.length + percent
       const totalPercentage = downloadIndex / currentAnime.totalDownloads * 100
-      this.animes[0] = {
-        ...currentAnime,
-        ...{
-          totalPercentage,
-          download: {
-            fileSize: toMB(size.total),
-            currFileSize: toMB(size.transferred),
-            currDlSpeed: toMB(speed)
-          }
-        }
+
+      this.animes[0].totalPercentage = totalPercentage
+      this.animes[0].download = {
+        fileSize: toMB(size.total),
+        currFileSize: toMB(size.transferred),
+        currDlSpeed: toMB(speed)
       }
-      console.log(this.animes[0].totalPercentage)
-      if (!this._$scope.$$phase) this._$scope.$apply()
+      this.reloadScope()
     })
 
     download.on('end', () => {
+      if (this.pendingCancel) {
+        this.pendingCancel = false
+        this.isDownloading = false
+        this.resetValues()
+        if (fs.existsSync(episodeDir)) fs.unlinkSync(episodeDir)
+        this.reloadScope()
+        return
+      }
       // TODO: create an sha256 checksum, that during loading it'll verify our
       // the current download's integrity and it doesn't match we'll just delete
       // the found file, and add it as an update.
@@ -149,7 +164,8 @@ class DownloadController {
 
     download.on('error', error => {
       this.cancel()
-      this._$rootScope.isDownloading = false
+      this.resetValues()
+      this.isDownloading = false
       // We'll wait for the file stream to finish.
       process.nextTick(() => {
         fsStream.end()
@@ -176,7 +192,6 @@ class DownloadController {
 DownloadController.$inject = [
   '$mdDialog',
   '$scope',
-  '$rootScope',
   'AnimeService',
   'DirectoryService'
 ]
