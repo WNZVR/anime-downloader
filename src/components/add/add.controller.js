@@ -37,7 +37,7 @@ class AddController {
     this.foundAnimes.push(animeDetail)
     this._animeService.foundAnimes = this.foundAnimes
     const animeDir = join(this.path, animeDetail.link)
-    if (existsSync(animeDir)) mkdirSync(animeDir)
+    if (!existsSync(animeDir)) mkdirSync(animeDir)
     this.cancel()
   }
 
