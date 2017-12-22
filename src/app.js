@@ -17,8 +17,8 @@ angular
     ($stateProvider, $urlRouterProvider, $mdThemingProvider) => {
       $mdThemingProvider
         .theme('default')
-        .primaryPalette('deep-purple', { default: '500' })
-        .accentPalette('purple', { default: '500' })
+        .primaryPalette('purple', { default: '500' })
+        .accentPalette('deep-purple', { default: '500' })
         .dark()
 
       $stateProvider
