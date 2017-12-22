@@ -39,12 +39,15 @@
               <h4 class="download-item-title">
                 {{ anime.title }}
               </h4>
-              <h6 class="download-item-episodes">
+              <h5 class="download-item-episodes">
                 Episode{{ anime.totalDownloads >= 1 ? 's ' + anime.episodes[0] + ' / ' + anime.episodes[anime.episodes.length - 1] : ' ' + anime.episodes[0] }}
+              </h5>
+              <h6>
+                {{ anime.download.currDlSpeed }} MB/s
               </h6>
             </div>
 
-            <md-progress-circular ng-hide="anime.totalPercentage === 0" md-mode="determinate" md-diameter="35" value="{{ anime.totalPercentagae }}">
+            <md-progress-circular ng-hide="anime.totalPercentage === 0" md-mode="determinate" md-diameter="35" value="{{ anime.totalPercentage }}">
             </md-progress-circular>
 
             <md-button class="md-icon-button md-secondary" ng-hide="$root.isDownloading" ng-click="download.delete(anime.link)">
