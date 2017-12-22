@@ -92,7 +92,7 @@ const createWindow = () => {
   )
 }
 
-ipcMain.on('CHANGE_TRAY_ICON', (event, arg) => {
+ipcMain.on('TRAY_ICON', (event, arg) => {
   if (mainTray) {
     mainTray.setImage(arg ? appLogoNotif : appLogoPng)
   }
