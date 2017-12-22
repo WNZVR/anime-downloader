@@ -1,6 +1,6 @@
 import angular from 'angular'
 import { join } from 'path'
-import { remote } from 'electron'
+import { remote, ipcRenderer } from 'electron'
 import { existsSync, unlinkSync, readdirSync } from 'fs'
 
 const { Menu } = remote
@@ -38,6 +38,7 @@ class HomeController {
     if (!foundAnimes.length) return
     let updates = 0
     foundAnimes.forEach(({ episodes }) => (updates += episodes.length))
+    ipcRenderer.send('TRAY_ICON', !!updates)
     this._$rootScope.updates = updates
   }
 
@@ -86,6 +87,26 @@ class HomeController {
     }
   }
 
+  _remove (path, link) {
+    const found = this.foundAnimes.find(a => a.link === link)
+    if (existsSync(path)) {
+      // TODO:
+      try {
+        unlinkSync(path)
+        this.foundAnimes.splice(this.foundAnimes.indexOf(found), 1)
+      } catch (e) {
+        let message = null
+        switch (e.code) {
+          case 'EISDIR':
+            message = 'We don\'t have persmissions to delete this folder.'
+            break
+          default:
+            break
+        }
+      }
+    }
+  }
+
   contextMenu (event, link) {
     const { clientX, clientY, which } = event
     if (which === 3) {
@@ -106,12 +127,13 @@ class HomeController {
                     .ok('Yes')
                     .cancel('No')
                 )
-                .then(() => {
-                  const found = this.foundAnimes.find(a => a.link === link)
-                  this.foundAnimes.splice(this.foundAnimes.indexOf(found), 1)
-                  if (existsSync(animePath)) unlinkSync(animePath)
-                }, () => {})
-            }
+                .then(
+                  () => {
+                    this._remove(animePath, link)
+                  },
+                  () => {}
+                )
+            } else this._remove(animePath, link)
           }
         },
         {
