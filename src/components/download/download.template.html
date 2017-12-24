@@ -12,7 +12,7 @@
 
       <md-button class="md-icon-button md-warn" ng-disabled="!download.isDownloading" ng-click="download.stop()">
         <md-icon md-font-library="material-icons" aria-label="Stop" alt="Stop">
-          stop 
+          stop
         </md-icon>
       </md-button>
 
@@ -25,41 +25,44 @@
   </md-toolbar>
   <md-subheader layout-padding>
     <i class="download-path">
-      Animes are downloaded in <strong ng-click="download.clickPath()">{{ download.displayPath }}</strong>
+      Animes are downloaded in
+      <strong ng-click="download.clickPath()">{{ download.displayPath }}</strong>
     </i>
   </md-subheader>
   <md-dialog-content ng-cloak>
-    <md-content>
-      <md-divider></md-divider>
-      <section class="download-list" layout-padding>
-        <md-list>
-          <md-list-item class="download-item" layout-margin ng-repeat="anime in download.animes">
+    <div class="md-dialog-content">
+      <md-content>
+        <md-divider></md-divider>
+        <section class="download-list" layout-padding>
+          <md-list>
+            <md-list-item class="download-item" layout-margin ng-repeat="anime in download.animes">
 
-            <div class="md-list-item-text" flex="" layout="column">
-              <h4 class="download-item-title">
-                {{ anime.totalPercentage === 0 ? '' : '*' }}
-                {{ anime.title }}
-              </h4>
-              <h5 class="download-item-episodes">
-                Episode{{ anime.totalDownloads >= 1 ? 's ' + anime.episodes[0] + ' / ' + anime.episodes[anime.episodes.length - 1] : ' ' + anime.episodes[0] }}
-              </h5>
-              <h6 class="download-item-infos" ng-hide="anime.totalPercentage === 0">
-                {{ anime.download.currDlSpeed }} MB/s
-              </h6>
-            </div>
+              <div class="md-list-item-text" flex="" layout="column">
+                <h4 class="download-item-title">
+                  {{ anime.totalPercentage === 0 ? '' : '*' }} {{ anime.title }}
+                </h4>
+                <h5 class="download-item-episodes">
+                  Episode{{ anime.totalDownloads >= 1 ? 's ' + anime.episodes[0] + ' / ' + anime.episodes[anime.episodes.length - 1] : ' ' + anime.episodes[0] }}
+                </h5>
+                <h6 class="download-item-infos" ng-hide="anime.totalPercentage === 0">
+                  {{ anime.download.currDlSpeed }} MB/s
+                </h6>
+              </div>
 
-            <md-progress-circular ng-hide="anime.totalPercentage === 0" md-mode="determinate" md-diameter="40" value="{{ anime.totalPercentage }}">
-            </md-progress-circular>
+              <md-progress-circular ng-hide="anime.totalPercentage === 0" md-mode="determinate" md-diameter="40" value="{{ anime.totalPercentage }}">
+              </md-progress-circular>
 
-            <md-button class="md-icon-button md-secondary" ng-hide="download.isDownloading" ng-click="download.delete(anime.link)">
-              <md-icon md-font-library="material-icons" aria-label="Delete">
-                delete
-              </md-icon>
-            </md-button>
+              <md-button class="md-icon-button md-secondary" ng-hide="download.isDownloading" ng-click="download.delete(anime.link)">
+                <md-icon md-font-library="material-icons" aria-label="Delete">
+                  delete
+                </md-icon>
+              </md-button>
 
-          </md-list-item>
-        </md-list>
-      </section>
-    </md-content>
+            </md-list-item>
+          </md-list>
+        </section>
+      </md-content>
+
+    </div>
   </md-dialog-content>
 </md-dialog>
