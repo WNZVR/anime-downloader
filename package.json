@@ -1,6 +1,7 @@
 {
   "build": {
     "appId": "org.animedownloader.app",
+    "productName": "Anime Downloader",
     "directories": {
       "buildResources": "resources",
       "output": "releases"
@@ -8,37 +9,27 @@
     "win": {
       "target": [
         {
-          "target": "nsis",
-          "arch": [
-            "x64",
-            "ia32"
-          ]
-        },
-        {
           "target": "squirrel",
-          "arch": [
-            "x64",
-            "ia32"
-          ]
+          "arch": ["x64"]
         }
       ],
       "icon": "src/assets/images/icon.ico",
       "publisherName": "eemj"
     },
-    "squirrelWindows": {
-      "iconUrl": "src/assets/images/icon.png",
-      "loadingGif": "src/assets/images/loading.gif"
+    "linux": {
+      "category": "Utility",
+      "target": [
+        {
+          "target": "pacman"
+        }
+      ]
     },
-    "files": [
-      "node_modules/",
-      "dist/",
-      "./index.js"
-    ],
-    "publish": [
-      {
-        "provider": "github"
-      }
-    ]
+    "squirrelWindows": {
+      "iconUrl": "https://gitlab.com/eemj/anime-downloader-assets/raw/master/icon.png",
+      "loadingGif": "src/assets/images/loading.gif",
+      "remoteReleases": false
+    },
+    "files": ["node_modules/", "dist/", "./index.js"]
   },
   "dependencies": {
     "@uirouter/angularjs": "^1.0.6",
@@ -103,11 +94,13 @@
     "lint": "eslint . --color",
     "preview": "electron .",
     "start": "cross-env NODE_ENV=production npm run webpack:prod && npm run preview",
-    "start:dev": "cross-env NODE_ENV=development npm run webpack:dev -- --display errors-only && npm run webpack:server",
+    "start:dev":
+      "cross-env NODE_ENV=development npm run webpack:dev -- --display errors-only && npm run webpack:server",
     "webpack:dev": "webpack --config ./config/webpack.config.dev.js",
     "webpack:prod": "webpack --config ./config/webpack.config.prod.js",
     "webpack:server": "webpack-dev-server --config ./config/webpack.config.dev.js",
-    "release": "electron-builder"
+    "release": "electron-builder",
+    "release:win": "electron-builder -w"
   },
   "version": "1.0.0"
 }
