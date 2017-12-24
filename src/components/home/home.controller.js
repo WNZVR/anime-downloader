@@ -26,7 +26,8 @@ class HomeController {
     this.path = this._settingsService.get('path')
     this.animeList = AnimeService.animeList
 
-    if (this.path && !this.animeList.length) this.reload()
+    if (!this.path) this.reload()
+    else if (this.path && !this.animeList.length) this.reload()
 
     this.foundAnimes = this._animeService.foundAnimes
 
