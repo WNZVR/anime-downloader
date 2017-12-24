@@ -1,4 +1,4 @@
-const url = require('url')
+const { format } = require('url')
 const {
   appProduction,
   appIndexHtml,
@@ -84,7 +84,7 @@ const createWindow = () => {
   })
 
   mainWindow.loadURL(
-    url.format({
+    format({
       pathname: appIndexHtml,
       protocol: 'file:',
       slashes: true
