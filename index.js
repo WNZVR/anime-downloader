@@ -72,7 +72,7 @@ const createWindow = () => {
     icon: appLogoPng
   })
 
-  if (!appProduction) {
+  if (!appProduction && appProduction !== undefined) {
     if (!mainWindow.webContents.isDevToolsOpened()) {
       mainWindow.webContents.openDevTools({ mode: 'undocked' })
     }
