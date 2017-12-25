@@ -13,7 +13,7 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "src/assets/images/icon.ico",
+      "icon": "resources/icon.ico",
       "publisherName": "eemj"
     },
     "linux": {
@@ -26,10 +26,10 @@
     },
     "squirrelWindows": {
       "iconUrl": "https://gitlab.com/eemj/anime-downloader-assets/raw/master/icon.png",
-      "loadingGif": "src/assets/images/loading.gif",
+      "loadingGif": "resources/images/loading.gif",
       "remoteReleases": false
     },
-    "files": ["node_modules/", "dist/", "./index.js"]
+    "files": ["node_modules/", "config/defaults.js", "dist/", "index.js"]
   },
   "dependencies": {
     "@uirouter/angularjs": "^1.0.6",
