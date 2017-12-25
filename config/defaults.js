@@ -15,5 +15,6 @@ module.exports = {
 
   appSrc: resolveApp('src'),
   appDist: resolveApp('dist'),
+  appReleases: resolveApp('releases'),
   appIndexHtml: resolveApp('dist/index.html')
 }
