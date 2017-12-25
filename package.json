@@ -12,7 +12,6 @@
       "publisherName": "eemj"
     },
     "nsis": {
-      "oneClick": false,
       "perMachine": true,
       "installerIcon": "src/assets/images/icon.ico",
       "uninstallerIcon": "src/assets/images/icon.ico",
@@ -59,7 +58,7 @@
   "liscense": "MIT",
   "private": true,
   "author": {
-    "name": "Jamie Farrugia",
+    "name": "eemj",
     "email": "jamiefre4ky@gmail.com",
     "url": "http://github.com/eemj"
   },
@@ -97,6 +96,7 @@
   "license": "ISC",
   "main": "index.js",
   "name": "anime-downloader",
+  "homepage": "https://gitlab.com/eemj/anime-downloader-assets",
   "scripts": {
     "postinstall": "npm run webpack:prod && electron-builder install-app-deps",
     "lint": "eslint . --color",
