@@ -10,8 +10,8 @@ module.exports = {
 
   appTitle: 'Anime Downloader',
 
-  appLogoPng: resolveApp('resources/icon.png'),
-  appLogoNotif: resolveApp('resources/icon_notification.png'),
+  appLogoPng: resolveApp('src/assets/images/icon.png'),
+  appLogoNotif: resolveApp('src/assets/images/icon_notification.png'),
 
   appSrc: resolveApp('src'),
   appDist: resolveApp('dist'),
