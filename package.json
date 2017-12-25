@@ -7,14 +7,16 @@
       "output": "releases"
     },
     "win": {
-      "target": [
-        {
-          "target": "squirrel",
-          "arch": ["x64"]
-        }
-      ],
+      "target": "nsis",
       "icon": "src/assets/images/icon.ico",
       "publisherName": "eemj"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "installerIcon": "src/assets/images/icon.ico",
+      "uninstallerIcon": "src/assets/images/icon.ico",
+      "shortcutName": "Anime Downloader"
     },
     "linux": {
       "category": "Utility",
@@ -25,11 +27,19 @@
       ]
     },
     "squirrelWindows": {
-      "iconUrl": "https://gitlab.com/eemj/anime-downloader-assets/raw/master/icon.png",
+      "iconUrl":
+        "https://gitlab.com/eemj/anime-downloader-assets/raw/master/icon.png",
       "loadingGif": "src/assets/images/loading.gif",
       "remoteReleases": false
     },
-    "files": ["node_modules/", "config/defaults.js", "src/assets/images/**", "dist/", "index.js"]
+    "compression": "maximum",
+    "files": [
+      "node_modules/",
+      "config/defaults.js",
+      "src/assets/images/**",
+      "dist/",
+      "index.js"
+    ]
   },
   "dependencies": {
     "@uirouter/angularjs": "^1.0.6",
@@ -39,8 +49,6 @@
     "angular-material": "^1.1.5",
     "angular-messages": "^1.6.6",
     "anime-scrape": "github:eeimaj/anime-scrape",
-    "axios": "^0.17.1",
-    "bunyan": "^1.8.12",
     "cheerio": "^1.0.0-rc.2",
     "extract-text-webpack-plugin": "^3.0.0",
     "html-webpack-plugin": "^2.30.1",
@@ -93,12 +101,14 @@
     "postinstall": "npm run webpack:prod && electron-builder install-app-deps",
     "lint": "eslint . --color",
     "preview": "electron .",
-    "start": "cross-env NODE_ENV=production npm run webpack:prod && npm run preview",
+    "start":
+      "cross-env NODE_ENV=production npm run webpack:prod && npm run preview",
     "start:dev":
       "cross-env NODE_ENV=development npm run webpack:dev -- --display errors-only && npm run webpack:server",
     "webpack:dev": "webpack --config ./config/webpack.config.dev.js",
     "webpack:prod": "webpack --config ./config/webpack.config.prod.js",
-    "webpack:server": "webpack-dev-server --config ./config/webpack.config.dev.js",
+    "webpack:server":
+      "webpack-dev-server --config ./config/webpack.config.dev.js",
     "release": "electron-builder",
     "release:win": "electron-builder -w"
   },
