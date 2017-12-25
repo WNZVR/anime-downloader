@@ -15,7 +15,12 @@ class TitlebarController {
   }
 
   maximize () {
-    remote.getCurrentWindow().maximize()
+    const currentWindow = remote.getCurrentWindow()
+    if (currentWindow.isMaximized()) {
+      currentWindow.restore()
+    } else {
+      currentWindow.maximize()
+    }
   }
 }
 
