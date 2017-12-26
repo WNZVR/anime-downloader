@@ -45,7 +45,7 @@ class HomeController {
   }
 
   reload () {
-    this._$state.go('load')
+    return this._$state.go('load')
   }
 
   addAnime () {
@@ -58,7 +58,7 @@ class HomeController {
           .textContent(
             'Something went wrong, press \'Refresh\' to restart the application.'
           )
-          .ariaLabel('ErrorDialog')
+          .ariaLabel('Error')
           .ok('OK')
       )
     } else {
@@ -91,12 +91,12 @@ class HomeController {
     }
   }
 
-  _remove (path) {
+  _remove (path, link) {
+    const found = this.foundAnimes.find(anime => anime.link === link)
     if (existsSync(path)) {
       rimraf(path, error => {
-        if (error) {
-          console.error(error)
-        }
+        if (error) console.error(error)
+        this.foundAnimes.splice(this.foundAnimes.indexOf(found), 1)
       })
     }
   }
@@ -110,24 +110,24 @@ class HomeController {
           click: () => {
             const animePath = join(this.path, link)
             if (readdirSync(animePath).length) {
-              this._$mdDialog
-                .show(
-                  this._$mdDialog
-                    .confirm()
-                    .clickOutsideToClose()
-                    .title('Error')
-                    .textContent('Are you sure you want to delete this anime?')
-                    .ariaLabel('ErrorDialog')
-                    .ok('Yes')
-                    .cancel('No')
+              const confirmation = this.$mdDialog
+                .prompt()
+                .clickOutsideToClose()
+                .title('Error')
+                .textContent(
+                  'Are you sure you want to delete this anime along with it\'s contents?'
                 )
-                .then(
-                  () => {
-                    this._remove(animePath)
-                  },
-                  () => {}
-                )
-            } else this._remove(animePath)
+                .ariaLabel('Error')
+                .ok('Yes')
+                .cancel('No')
+
+              this._$mdDialog.show(confirmation).then(
+                () => {
+                  this._remove(animePath, link)
+                },
+                () => {}
+              )
+            } else this._remove(animePath, link)
           }
         },
         {
