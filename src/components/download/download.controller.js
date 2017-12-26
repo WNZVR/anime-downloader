@@ -12,6 +12,7 @@ const homePath = app.getPath('home')
 const toMB = value => (value / 1024 / 1024).toFixed(2)
 
 class DownloadController {
+  // @ngInject
   constructor (
     $mdDialog,
     $scope,
@@ -25,17 +26,25 @@ class DownloadController {
     this._$scope = $scope
     this._animeService = AnimeService
     this._directoryService = DirectoryService
+    this._settingsService = SettingsService
 
     const { foundAnimes } = this._animeService
 
+    // Powersave
     this.powerSaveId = null
     this.powerSave = this._settingsService.get('powerSave') || false
+
+    // Path
     this.path = this._directoryService.path
     this.displayPath = this.path.startsWith(homePath)
       ? this.path.replace(homePath, '~')
       : this.path
+
+    // Download
     this.isDownloading = false
     this.pendingCancel = false
+
+    // Anime
     this.animes = foundAnimes.map(anime => ({
       ...anime,
       ...{
@@ -48,6 +57,10 @@ class DownloadController {
         }
       }
     }))
+  }
+
+  $ngInject () {
+    console.log('test')
   }
 
   clickPath () {
@@ -74,7 +87,7 @@ class DownloadController {
     // This shouldn't happen but we'll make sure it doesn't.
     if (!this.isDownloading) {
       if (!this.powerSave) {
-        this.powerSaveId = powerSaveBlocker.start('prevent-display-sleep')
+        this.powerSaveId = powerSaveBlocker.start('prevent-app-suspension')
       }
       this.download()
     }
