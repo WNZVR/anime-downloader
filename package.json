@@ -32,8 +32,7 @@
       ]
     },
     "squirrelWindows": {
-      "iconUrl":
-        "https://gitlab.com/eemj/anime-downloader-assets/raw/master/icon.png",
+      "iconUrl": "https://gitlab.com/eemj/anime-downloader-assets/raw/master/icon.png",
       "loadingGif": "src/assets/images/loading.gif",
       "remoteReleases": false
     },
@@ -54,6 +53,7 @@
     "angular-material": "^1.1.5",
     "angular-messages": "^1.6.6",
     "anime-scrape": "github:eeimaj/anime-scrape",
+    "chalk": "^2.3.0",
     "cheerio": "^1.0.0-rc.2",
     "extract-text-webpack-plugin": "^3.0.0",
     "html-webpack-plugin": "^2.30.1",
