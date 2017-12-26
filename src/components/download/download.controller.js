@@ -2,7 +2,7 @@ import scraper from 'anime-scrape'
 import { resolve } from 'path'
 import progress from 'request-progress'
 import request from 'request'
-import { remote } from 'electron'
+import { remote, powerSaveBlocker } from 'electron'
 import { createHash } from 'crypto'
 import fs from 'fs'
 
@@ -12,7 +12,13 @@ const homePath = app.getPath('home')
 const toMB = value => (value / 1024 / 1024).toFixed(2)
 
 class DownloadController {
-  constructor ($mdDialog, $scope, AnimeService, DirectoryService) {
+  constructor (
+    $mdDialog,
+    $scope,
+    AnimeService,
+    DirectoryService,
+    SettingsService
+  ) {
     'ngInject'
 
     this._$mdDialog = $mdDialog
@@ -22,6 +28,8 @@ class DownloadController {
 
     const { foundAnimes } = this._animeService
 
+    this.powerSaveId = null
+    this.powerSave = this._settingsService.get('powerSave') || false
     this.path = this._directoryService.path
     this.displayPath = this.path.startsWith(homePath)
       ? this.path.replace(homePath, '~')
@@ -64,12 +72,31 @@ class DownloadController {
   start () {
     this.path = this._directoryService.path
     // This shouldn't happen but we'll make sure it doesn't.
-    if (!this.isDownloading) this.download()
+    if (!this.isDownloading) {
+      if (!this.powerSave) {
+        this.powerSaveId = powerSaveBlocker.start('prevent-display-sleep')
+      }
+      this.download()
+    }
   }
 
   stop () {
     if (!this.pendingCancel && this.isDownloading) {
       this.pendingCancel = true
+    }
+  }
+
+  terminate () {
+    if (this.isDownloading) {
+      if (
+        !this.powerSave &&
+        this.powerSaveId &&
+        powerSaveBlocker.isStarted(this.powerSaveId)
+      ) {
+        powerSaveBlocker.stop(this.powerSaveId)
+        this.powerSaveId = 0
+      }
+      this.isDownloading = false
     }
   }
 
@@ -91,7 +118,7 @@ class DownloadController {
 
   async download () {
     if (!this.animes.length) {
-      this.isDownloading = false
+      this.terminate()
       return
     }
     const currentAnime = this.animes[0]
@@ -133,7 +160,7 @@ class DownloadController {
     download.on('end', () => {
       if (this.pendingCancel) {
         this.pendingCancel = false
-        this.isDownloading = false
+        this.terminate()
         this.resetValues()
         if (fs.existsSync(episodeDir)) fs.unlinkSync(episodeDir)
         this.reloadScope()
@@ -165,7 +192,7 @@ class DownloadController {
     download.on('error', error => {
       this.cancel()
       this.resetValues()
-      this.isDownloading = false
+      this.terminate()
       // We'll wait for the file stream to finish.
       process.nextTick(() => {
         fsStream.end()
@@ -193,7 +220,8 @@ DownloadController.$inject = [
   '$mdDialog',
   '$scope',
   'AnimeService',
-  'DirectoryService'
+  'DirectoryService',
+  'SettingsService'
 ]
 
 export default DownloadController
