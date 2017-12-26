@@ -3,19 +3,16 @@
     <div class="md-toolbar-tools">
       <h2>Downloads</h2>
       <span flex></span>
-
       <md-button class="md-icon-button" ng-disabled="download.isDownloading" ng-click="download.start()">
         <md-icon md-font-library="material-icons" aria-label="Start" alt="Start">
           play_arrow
         </md-icon>
       </md-button>
-
       <md-button class="md-icon-button md-warn" ng-disabled="!download.isDownloading" ng-click="download.stop()">
         <md-icon md-font-library="material-icons" aria-label="Stop" alt="Stop">
           stop
         </md-icon>
       </md-button>
-
       <md-button class="md-icon-button" ng-click="download.cancel()">
         <md-icon md-font-library="material-icons" aria-label="Close" alt="Start">
           close
@@ -33,10 +30,9 @@
     <div class="md-dialog-content">
       <md-content>
         <md-divider></md-divider>
-        <section class="download-list" layout-padding>
+        <section class="download-list" ng-if="download.anime.length" layout-padding>
           <md-list>
             <md-list-item class="download-item" layout-margin ng-repeat="anime in download.animes">
-
               <div class="md-list-item-text" flex="" layout="column">
                 <h4 class="download-item-title">
                   {{ anime.totalPercentage === 0 ? '' : '*' }} {{ anime.title }}
@@ -48,21 +44,22 @@
                   {{ anime.download.currDlSpeed }} MB/s
                 </h6>
               </div>
-
               <md-progress-circular ng-hide="anime.totalPercentage === 0" md-mode="determinate" md-diameter="40" value="{{ anime.totalPercentage }}">
               </md-progress-circular>
-
               <md-button class="md-icon-button md-secondary" ng-hide="download.isDownloading" ng-click="download.delete(anime.link)">
                 <md-icon md-font-library="material-icons" aria-label="Delete">
                   delete
                 </md-icon>
               </md-button>
-
             </md-list-item>
           </md-list>
         </section>
+        <section ng-if="!download.animes.length" layout="row" layout-align="center center" layout-padding>
+          <h3 class="md-headline">
+            You don't have anything to download.
+          </h3>
+        </section>
       </md-content>
-
     </div>
   </md-dialog-content>
 </md-dialog>
