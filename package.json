@@ -116,5 +116,5 @@
     "release:linux": "electron-builder -l",
     "checksums": "node scripts/create_checksums"
   },
-  "version": "1.0.0"
+  "version": "1.0.1"
 }
