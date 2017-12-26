@@ -64,6 +64,7 @@ class HomeController {
     } else {
       const parent = angular.element(document.querySelector('.md-fab')[0])
       this._$mdDialog.show({
+        ariaLabel: 'Add',
         clickOutsideToClose: true,
         escapeToClose: true,
         template: '<add></add>',
@@ -77,6 +78,7 @@ class HomeController {
 
   downloadAnime () {
     this._$mdDialog.show({
+      ariaLabel: 'Download',
       template: '<download></download>',
       parent: angular.element(document.body),
       onRemoving: this.refreshAnimeUpdates()
@@ -89,8 +91,7 @@ class HomeController {
     }
   }
 
-  _remove (path, link) {
-    const found = this.foundAnimes.find(a => a.link === link)
+  _remove (path) {
     if (existsSync(path)) {
       rimraf(path, error => {
         if (error) {
@@ -122,11 +123,11 @@ class HomeController {
                 )
                 .then(
                   () => {
-                    this._remove(animePath, link)
+                    this._remove(animePath)
                   },
                   () => {}
                 )
-            } else this._remove(animePath, link)
+            } else this._remove(animePath)
           }
         },
         {
