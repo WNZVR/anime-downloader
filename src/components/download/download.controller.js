@@ -2,17 +2,16 @@ import scraper from 'anime-scrape'
 import { resolve } from 'path'
 import progress from 'request-progress'
 import request from 'request'
-import { remote, powerSaveBlocker } from 'electron'
+import { remote } from 'electron'
 import { createHash } from 'crypto'
 import fs from 'fs'
 
-const { app, shell } = remote
+const { app, shell, powerMonitor } = remote
 const now = (date = new Date()) => date.toTimeString().split(' ')[0]
 const homePath = app.getPath('home')
 const toMB = value => (value / 1024 / 1024).toFixed(2)
 
 class DownloadController {
-  // @ngInject
   constructor (
     $mdDialog,
     $scope,
@@ -30,21 +29,12 @@ class DownloadController {
 
     const { foundAnimes } = this._animeService
 
-    // Powersave
-    this.powerSaveId = null
-    this.powerSave = this._settingsService.get('powerSave') || false
-
-    // Path
     this.path = this._directoryService.path
     this.displayPath = this.path.startsWith(homePath)
       ? this.path.replace(homePath, '~')
       : this.path
-
-    // Download
     this.isDownloading = false
     this.pendingCancel = false
-
-    // Anime
     this.animes = foundAnimes.map(anime => ({
       ...anime,
       ...{
@@ -59,8 +49,14 @@ class DownloadController {
     }))
   }
 
-  $ngInject () {
-    console.log('test')
+  $onInit () {
+    powerMonitor.on('suspend', () => {
+      if (this.isDownloading) this.stop()
+    })
+
+    powerMonitor.on('resume', () => {
+      if (!this.isDownloading) this.start()
+    })
   }
 
   clickPath () {
@@ -86,9 +82,6 @@ class DownloadController {
     this.path = this._directoryService.path
     // This shouldn't happen but we'll make sure it doesn't.
     if (!this.isDownloading) {
-      if (!this.powerSave) {
-        this.powerSaveId = powerSaveBlocker.start('prevent-app-suspension')
-      }
       this.download()
     }
   }
@@ -96,20 +89,6 @@ class DownloadController {
   stop () {
     if (!this.pendingCancel && this.isDownloading) {
       this.pendingCancel = true
-    }
-  }
-
-  terminate () {
-    if (this.isDownloading) {
-      if (
-        !this.powerSave &&
-        this.powerSaveId &&
-        powerSaveBlocker.isStarted(this.powerSaveId)
-      ) {
-        powerSaveBlocker.stop(this.powerSaveId)
-        this.powerSaveId = 0
-      }
-      this.isDownloading = false
     }
   }
 
@@ -131,7 +110,7 @@ class DownloadController {
 
   async download () {
     if (!this.animes.length) {
-      this.terminate()
+      this.isDownloading = false
       return
     }
     const currentAnime = this.animes[0]
@@ -173,7 +152,7 @@ class DownloadController {
     download.on('end', () => {
       if (this.pendingCancel) {
         this.pendingCancel = false
-        this.terminate()
+        this.isDownloading = false
         this.resetValues()
         if (fs.existsSync(episodeDir)) fs.unlinkSync(episodeDir)
         this.reloadScope()
@@ -205,7 +184,7 @@ class DownloadController {
     download.on('error', error => {
       this.cancel()
       this.resetValues()
-      this.terminate()
+      this.isDownloading = false
       // We'll wait for the file stream to finish.
       process.nextTick(() => {
         fsStream.end()
