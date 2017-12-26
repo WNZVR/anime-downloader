@@ -28,9 +28,13 @@ class SettingsService {
   }
 
   _resetDefault () {
-    return fs.writeFileSync(this.config, JSON.stringify(defaultSettings, null, 2), {
-      encoding: 'utf-8'
-    })
+    return fs.writeFileSync(
+      this.config,
+      JSON.stringify(defaultSettings, null, 2),
+      {
+        encoding: 'utf-8'
+      }
+    )
   }
 
   _load () {
@@ -44,22 +48,22 @@ class SettingsService {
     // otherwise we'll just add the missing keys in.
     Object.keys(defaultSettings).forEach(key => {
       if (!Object.keys(settings).includes(key)) {
-        ;[this, this._settings].forEach(item => {
+        [this, this._settings].forEach(item => {
           item.set(key, defaultSettings[key])
         })
       }
     })
-
-    console.log(this._settings.entries())
   }
 
   _write () {
-    const settings = {}
-    ;[...this._settings].forEach(([key, value]) => {
+    const settings = {};
+    [...this._settings].forEach(([key, value]) => {
       settings[key] = value
     })
     console.info('[settings] write -> %o', settings)
-    fs.writeFileSync(this.config, JSON.stringify(settings, null, 2), { encoding: 'utf-8' })
+    fs.writeFileSync(this.config, JSON.stringify(settings, null, 2), {
+      encoding: 'utf-8'
+    })
   }
 
   set (...args) {
