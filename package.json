@@ -82,7 +82,6 @@
     "css-loader": "^0.28.5",
     "electron": "^1.7.9",
     "electron-builder": "^19.49.2",
-    "electron-builder-squirrel-windows": "^19.49.0",
     "eslint": "^4.8.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-angular": "^3.1.1",
