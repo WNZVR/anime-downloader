@@ -12,7 +12,7 @@ module.exports = (compress = false) => ({
   context: appSrc,
   entry: [require.resolve('babel-polyfill'), './app.js'],
   output: {
-    filename: compress ? '[name].[hash:8].js' : '[name].js',
+    filename: compress ? '[hash:16].js' : '[name].js',
     path: appDist
   },
   module: {
@@ -58,7 +58,7 @@ module.exports = (compress = false) => ({
         test: /\.(otf|ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
         loader: require.resolve('file-loader'),
         options: {
-          name: compress ? '[name].[hash:8].[ext]' : '[name].[ext]'
+          name: compress ? '[hash:16].[ext]' : '[name].[ext]'
         }
       },
       {
@@ -113,7 +113,7 @@ module.exports = (compress = false) => ({
     }),
     new ExtractTextPlugin({
       allChunks: true,
-      filename: compress ? '[name].[contenthash:8].css' : '[name].css'
+      filename: compress ? '[contenthash:16].css' : '[name].css'
     }),
     !compress
       ? () => {}
