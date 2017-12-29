@@ -126,7 +126,7 @@ class DownloadController {
     const fsStream = fs.createWriteStream(episodeDir)
     const download = progress(request(downloadUrl))
 
-    if (!fs.existsSync(episodeDir)) fs.closeSync(fs.openSync(episodeDir))
+    if (!fs.existsSync(episodeDir)) fs.closeSync(fs.openSync(episodeDir, 'w'))
 
     download.pipe(fsStream)
 
