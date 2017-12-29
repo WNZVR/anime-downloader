@@ -1,6 +1,6 @@
 const { format } = require('url')
 const {
-  appProduction,
+  appEnv,
   appIndexHtml,
   appLogoPng,
   appLogoNotif,
@@ -72,7 +72,7 @@ const createWindow = () => {
     icon: appLogoPng
   })
 
-  if (!appProduction && appProduction !== undefined) {
+  if (appEnv === 'development') {
     if (!mainWindow.webContents.isDevToolsOpened()) {
       mainWindow.webContents.openDevTools({ mode: 'undocked' })
     }

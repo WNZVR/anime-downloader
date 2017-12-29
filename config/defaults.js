@@ -3,7 +3,7 @@ const resolveApp = args => join(__dirname, `../${args}`)
 
 module.exports = {
   // We'll only use this for electron's DevTools
-  appProduction: process.env.NODE_ENV === 'production',
+  appEnv: process.env.NODE_ENV,
 
   appDevPort: 4200,
   appDevHostname: 'localhost',
