@@ -1,4 +1,4 @@
-const { readdirSync, readFileSync, lstatSync, writeFileSync, statSync } = require('fs')
+const { readdirSync, readFileSync, lstatSync, writeFileSync } = require('fs')
 const { createHash } = require('crypto')
 const { appReleases } = require('../config/defaults')
 const rimraf = require('rimraf')
