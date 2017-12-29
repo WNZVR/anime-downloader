@@ -1,6 +1,4 @@
-#!/usr/bin/env node
-
-const { readdirSync, readFileSync, lstatSync, writeFileSync } = require('fs')
+const { readdirSync, readFileSync, lstatSync, writeFileSync, statSync } = require('fs')
 const { createHash } = require('crypto')
 const { appReleases } = require('../config/defaults')
 const rimraf = require('rimraf')
@@ -10,7 +8,7 @@ const releases = readdirSync(appReleases)
 
 releases.forEach(release => {
   const item = join(appReleases, release)
-  if (lstatSync(item).isDirectory()) {
+  if (lstatSync(item).isDirectory() || item.includes('blockmap')) {
     rimraf(item, error => {
       if (error) console.error(error)
     })
