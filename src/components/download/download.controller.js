@@ -35,18 +35,20 @@ class DownloadController {
       : this.path
     this.isDownloading = false
     this.pendingCancel = false
-    this.animes = foundAnimes.map(anime => ({
-      ...anime,
-      ...{
-        totalPercentage: 0,
-        totalDownloads: anime.episodes.length,
-        download: {
-          fileSize: null,
-          currFileSize: null,
-          currDlSpeed: null
+    this.animes = foundAnimes
+      .filter(({ episodes }) => episodes.length)
+      .map(anime => ({
+        ...anime,
+        ...{
+          totalPercentage: 0,
+          totalDownloads: anime.episodes.length,
+          download: {
+            fileSize: null,
+            currFileSize: null,
+            currDlSpeed: null
+          }
         }
-      }
-    }))
+      }))
   }
 
   $onInit () {
