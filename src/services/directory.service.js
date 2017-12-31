@@ -3,7 +3,7 @@ import { join } from 'path'
 import { remote } from 'electron'
 import scraper from 'anime-scrape'
 
-const { dialog, shell } = remote
+const { dialog, shell, app } = remote
 
 class DirectoryService {
   constructor (SettingsService, AnimeService, $mdDialog) {
@@ -34,7 +34,9 @@ class DirectoryService {
           .textContent('Directory wasn\'t selected.')
           .ariaLabel('ErrorDialog')
           .ok('OK')
-      )
+      ).then(() => {
+        if (!this.path) app.quit()
+      })
       return false
     }
     if (directory[0] === this.path) {
