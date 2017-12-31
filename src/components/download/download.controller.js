@@ -111,7 +111,6 @@ class DownloadController {
   }
 
   async download () {
-    console.log(this.animes)
     if (!this.animes.length) {
       this.isDownloading = false
       this.reloadScope()
