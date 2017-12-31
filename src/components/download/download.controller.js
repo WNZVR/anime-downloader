@@ -111,8 +111,10 @@ class DownloadController {
   }
 
   async download () {
+    console.log(this.animes)
     if (!this.animes.length) {
       this.isDownloading = false
+      this.reloadScope()
       return
     }
     const currentAnime = this.animes[0]
@@ -156,7 +158,9 @@ class DownloadController {
         this.pendingCancel = false
         this.isDownloading = false
         this.resetValues()
-        if (fs.existsSync(episodeDir)) fs.unlinkSync(episodeDir)
+        if (fs.existsSync(episodeDir)) {
+          fs.unlinkSync(episodeDir)
+        }
         this.reloadScope()
         return
       }
@@ -190,7 +194,9 @@ class DownloadController {
       // We'll wait for the file stream to finish.
       process.nextTick(() => {
         fsStream.end()
-        if (fs.existsSync(episodeDir)) fs.unlinkSync(episodeDir)
+        if (fs.existsSync(episodeDir)) {
+          fs.unlinkSync(episodeDir)
+        }
       })
       // We'll warn the user that something bad happened.
       console.error(`[download] ${now()} -> ${error}`)
