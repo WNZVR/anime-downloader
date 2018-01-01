@@ -104,36 +104,38 @@ class HomeController {
   contextMenu (event, link) {
     const { clientX, clientY, which } = event
     if (which === 3) {
+      const animePath = join(this.path, link)
       const menu = Menu.buildFromTemplate([
         {
           label: 'Delete',
           click: () => {
-            const animePath = join(this.path, link)
-            if (readdirSync(animePath).length) {
-              const confirmation = this.$mdDialog
-                .prompt()
-                .clickOutsideToClose()
-                .title('Error')
-                .textContent(
-                  'Are you sure you want to delete this anime along with it\'s contents?'
-                )
-                .ariaLabel('Error')
-                .ok('Yes')
-                .cancel('No')
+            if (existsSync(animePath)) {
+              if (readdirSync(animePath).length) {
+                const confirmation = this._$mdDialog
+                  .confirm()
+                  .clickOutsideToClose()
+                  .title('Error')
+                  .textContent(
+                    'Are you sure you want to delete this anime along with it\'s contents?'
+                  )
+                  .ariaLabel('Alert')
+                  .ok('Yes')
+                  .cancel('No')
 
-              this._$mdDialog.show(confirmation).then(
-                () => {
-                  this._remove(animePath, link)
-                },
-                () => {}
-              )
+                this._$mdDialog.ahow(confirmation).then(
+                  () => {
+                    this._remove(animePath, link)
+                  },
+                  () => {}
+                )
+              } else this._remove(animePath, link)
             } else this._remove(animePath, link)
           }
         },
         {
           label: 'Open Folder',
           click: () => {
-            this._directoryService.open(join(this.path, link))
+            this._directoryService.open(animePath)
           }
         }
       ])
