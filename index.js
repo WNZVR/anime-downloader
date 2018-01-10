@@ -111,7 +111,7 @@ app.on('before-quit', () => {
 })
 
 app.on('will-quit', () => {
-  if (mainTray) {
+  if (!mainTray.isDestroyed()) {
     mainTray.destroy()
     mainTray = null
   }
@@ -124,5 +124,5 @@ app.on('activate', () => {
 })
 
 app.on('window-all-closed', () => {
-  if (process.platform === 'win32') app.quit()
+  if (process.platform !== 'darwin') app.quit()
 })
