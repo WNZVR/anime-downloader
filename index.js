@@ -72,12 +72,6 @@ const createWindow = () => {
     icon: appLogoPng
   })
 
-  if (appEnv === 'development') {
-    if (!mainWindow.webContents.isDevToolsOpened()) {
-      mainWindow.webContents.openDevTools({ mode: 'undocked' })
-    }
-  }
-
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     if (!mainTray) createTray()
