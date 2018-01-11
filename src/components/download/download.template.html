@@ -13,7 +13,7 @@
           stop
         </md-icon>
       </md-button>
-      <md-button class="md-icon-button" ng-click="download.cancel()">
+      <md-button class="md-icon-button" ng-disabled="download.isDownloading" ng-click="download.cancel()">
         <md-icon md-font-library="material-icons" aria-label="Close" alt="Start">
           close
         </md-icon>
