@@ -2,17 +2,19 @@ const { join } = require('path')
 const webpack = require('webpack')
 const HtmlPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const { appSrc, appDist } = require('./defaults')
+const { appSrc, appDist, appEnv } = require('./defaults')
 const autoprefixer = require('autoprefixer')
 
-module.exports = (compress = false) => ({
+const compress = appEnv === 'production'
+
+module.exports = {
   bail: true,
   target: 'electron-renderer',
   devtool: 'cheap-source-map',
   context: appSrc,
   entry: [require.resolve('babel-polyfill'), './app.js'],
   output: {
-    filename: compress ? '[hash:16].js' : '[name].js',
+    filename: `${compress ? '[hash:16]' : '[name]'}.js`,
     path: appDist
   },
   module: {
@@ -58,7 +60,7 @@ module.exports = (compress = false) => ({
         test: /\.(otf|ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
         loader: require.resolve('file-loader'),
         options: {
-          name: compress ? '[hash:16].[ext]' : '[name].[ext]'
+          name: `${compress ? '[hash:16]' : '[name]'}.[ext]`
         }
       },
       {
@@ -70,7 +72,9 @@ module.exports = (compress = false) => ({
               loader: require.resolve('css-loader'),
               options: {
                 importLoaders: 1,
-                minimize: !!compress
+                minimize: compress
+                  ? { discardComments: { removeAll: true } }
+                  : false
               }
             },
             require.resolve('sass-loader'),
@@ -113,7 +117,7 @@ module.exports = (compress = false) => ({
     }),
     new ExtractTextPlugin({
       allChunks: true,
-      filename: compress ? '[contenthash:16].css' : '[name].css'
+      filename: `${compress ? '[contenthash:16]' : '[name]'}.css`
     }),
     !compress
       ? () => {}
@@ -123,4 +127,4 @@ module.exports = (compress = false) => ({
         comments: false
       })
   ]
-})
+}
