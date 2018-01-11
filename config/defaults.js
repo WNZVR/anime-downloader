@@ -1,6 +1,9 @@
 const { join } = require('path')
 const resolveApp = args => join(__dirname, `../${args}`)
 
+// Intitialize Enviornments
+require('./env')
+
 module.exports = {
   // We'll only use this for electron's DevTools
   appEnv: process.env.NODE_ENV,
