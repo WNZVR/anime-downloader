@@ -104,6 +104,7 @@
   "homepage": "https://gitlab.com/eemj/anime-downloader-assets",
   "scripts": {
     "postinstall": "npm run webpack:prod && electron-builder install-app-deps",
+    "postbuild": "npm run checksums",
     "lint": "eslint . --color",
     "preview": "electron .",
     "start": "npm run webpack:prod && npm run preview",
@@ -116,5 +117,5 @@
     "release:linux": "electron-builder -l",
     "checksums": "node scripts/checksums"
   },
-  "version": "1.0.1"
+  "version": "1.0.2"
 }
