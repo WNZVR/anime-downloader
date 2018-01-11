@@ -106,15 +106,15 @@
     "postinstall": "npm run webpack:prod && electron-builder install-app-deps",
     "lint": "eslint . --color",
     "preview": "electron .",
-    "start": "cross-env NODE_ENV=production npm run webpack:prod && npm run preview",
-    "start:dev": "cross-env NODE_ENV=development npm run webpack:dev -- --display errors-only && npm run webpack:server",
+    "start": "npm run webpack:prod && npm run preview",
+    "start:dev": "npm run webpack:dev -- --display errors-only && npm run webpack:server",
     "webpack:dev": "webpack --config ./config/webpack.config.dev.js",
-    "webpack:prod": "webpack --config ./config/webpack.config.prod.js",
+    "webpack:prod": "cross-env NODE_ENV=production webpack --config ./config/webpack.config.prod.js",
     "webpack:server": "webpack-dev-server --config ./config/webpack.config.dev.js",
     "release": "electron-builder",
     "release:win": "electron-builder -w",
     "release:linux": "electron-builder -l",
-    "checksums": "node scripts/create_checksums"
+    "checksums": "node scripts/checksums"
   },
   "version": "1.0.1"
 }
