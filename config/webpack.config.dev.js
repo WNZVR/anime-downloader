@@ -1,18 +1,23 @@
 const webpack = require('webpack')
 const { spawn } = require('child_process')
 const { appDevPort, appDevHostname, appDist } = require('./defaults')
+const base = require('./webpack.config.base')
 
 const publicPath = `http://${appDevHostname}:${appDevPort}/`
 
 const baseConfig = Object.assign(
   {},
+  base,
   {
     devtool: 'source-map',
-    entry: ['webpack/hot/dev-server', `webpack-dev-server/client${publicPath}`],
-    output: { publicPath },
-    plugins: [new webpack.HotModuleReplacementPlugin()]
-  },
-  require('./webpack.config.base')
+    entry: [
+      'webpack/hot/dev-server',
+      `webpack-dev-server/client?${publicPath}`,
+      ...base.entry
+    ],
+    output: { ...base.output, publicPath },
+    plugins: [...base.plugins, new webpack.HotModuleReplacementPlugin()]
+  }
 )
 
 const devServer = {
