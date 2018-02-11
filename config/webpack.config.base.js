@@ -24,8 +24,8 @@ module.exports = {
         test: /\.js$/,
         loader: require.resolve('babel-loader'),
         options: {
-          babelrc: false,
           compact: true,
+          babelrc: false,
           presets: [
             [
               require('babel-preset-env').default,
@@ -34,11 +34,11 @@ module.exports = {
                   ie: 9,
                   uglify: true
                 },
-                useBuiltIns: false,
-                modules: false
+                useBuiltIns: false
+                // modules: false
               }
             ],
-            'stage-2'
+            require('babel-preset-stage-2')
           ],
           plugins: [
             [
