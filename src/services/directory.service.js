@@ -26,17 +26,19 @@ class DirectoryService {
       properties: ['openDirectory']
     })
     if (!directory) {
-      this._$mdDialog.show(
-        this._$mdDialog
-          .alert()
-          .clickOutsideToClose()
-          .title('Error')
-          .textContent('Directory wasn\'t selected.')
-          .ariaLabel('ErrorDialog')
-          .ok('OK')
-      ).then(() => {
-        if (!this.path) app.quit()
-      })
+      this._$mdDialog
+        .show(
+          this._$mdDialog
+            .alert()
+            .clickOutsideToClose()
+            .title('Error')
+            .textContent('Directory wasn\'t selected.')
+            .ariaLabel('ErrorDialog')
+            .ok('OK')
+        )
+        .then(() => {
+          if (!this.path) app.quit()
+        })
       return false
     }
     if (directory[0] === this.path) {
@@ -67,22 +69,27 @@ class DirectoryService {
     const foundAnimeFolders = fs
       .readdirSync(this.path)
       .filter(
-        folder =>
-          fs.lstatSync(join(this.path, folder)).isDirectory() &&
-          animeList.includes(folder)
+        folder => fs.lstatSync(join(this.path, folder)).isDirectory() && animeList.includes(folder)
       )
     if (!foundAnimeFolders.length) return foundAnimes
     const animeDetails = await Promise.all(
       foundAnimeFolders.map(folder => scraper.getDetail(folder))
     )
+    const animeLatest = await scraper.getLatest()
+    animeLatest.forEach(({ link, episode }) => {
+      if (animeDetails.link === link) {
+        if (!animeDetails.episodes.includes(episode)) {
+          animeDetails.episodes.push(episode)
+        }
+      }
+    })
     animeDetails.forEach(({ link, episodes, ...details }) => {
       foundAnimes.push({
         ...details,
         ...{
           link,
           episodes: episodes.filter(
-            episode =>
-              !fs.existsSync(join(this.path, link, `Episode ${episode}.mp4`))
+            episode => !fs.existsSync(join(this.path, link, `Episode ${episode}.mp4`))
           )
         }
       })
