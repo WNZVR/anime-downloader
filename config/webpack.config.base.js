@@ -2,10 +2,11 @@ const { join } = require('path')
 const webpack = require('webpack')
 const HtmlPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const { appSrc, appDist, appEnv } = require('./defaults')
+const WebpackBar = require('webpackbar')
+const { appSrc, appDist } = require('./defaults')
 const autoprefixer = require('autoprefixer')
 
-const compress = appEnv === 'production'
+const isProduction = (isTrue, isFalse) => (process.env.NODE_ENV === 'production' ? isTrue : isFalse)
 
 module.exports = {
   bail: true,
@@ -14,7 +15,7 @@ module.exports = {
   context: appSrc,
   entry: [require.resolve('babel-polyfill'), './app.js'],
   output: {
-    filename: `${compress ? '[hash:16]' : '[name]'}.js`,
+    filename: `${isProduction('[hash:16]', '[name]')}.js`,
     path: appDist
   },
   module: {
@@ -60,7 +61,7 @@ module.exports = {
         test: /\.(otf|ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
         loader: require.resolve('file-loader'),
         options: {
-          name: `${compress ? '[hash:16]' : '[name]'}.[ext]`
+          name: `${isProduction('[hash:16]', '[name]')}.[ext]`
         }
       },
       {
@@ -72,9 +73,7 @@ module.exports = {
               loader: require.resolve('css-loader'),
               options: {
                 importLoaders: 1,
-                minimize: compress
-                  ? { discardComments: { removeAll: true } }
-                  : false
+                minimize: isProduction({ discardComments: { removeAll: true } }, false)
               }
             },
             require.resolve('sass-loader'),
@@ -83,12 +82,7 @@ module.exports = {
               options: {
                 plugins: [
                   autoprefixer({
-                    browsers: [
-                      '>1%',
-                      'last 4 versions',
-                      'Firefox ESR',
-                      'not ie < 9'
-                    ],
+                    browsers: ['>1%', 'last 4 versions', 'Firefox ESR', 'not ie < 9'],
                     flexbox: 'no-2009'
                   })
                 ]
@@ -99,12 +93,13 @@ module.exports = {
       }
     ]
   },
+  stats: 'errors-only',
   plugins: [
     new HtmlPlugin({
       template: join(appSrc, 'assets', 'index.ejs'),
       inject: true,
-      minify: compress
-        ? {
+      minify: isProduction(
+        {
           removeComments: true,
           collapseWhitespace: true,
           minifyURLs: true,
@@ -112,19 +107,24 @@ module.exports = {
           minifyCSS: true,
           keepClosingSlash: true,
           removeEmptyAttributes: true
-        }
-        : false
+        },
+        false
+      )
     }),
     new ExtractTextPlugin({
       allChunks: true,
-      filename: `${compress ? '[contenthash:16]' : '[name]'}.css`
+      filename: `${isProduction('[contenthash:16]', '[name]')}.css`
     }),
-    !compress
-      ? () => {}
-      : new webpack.optimize.UglifyJsPlugin({
+    isProduction(
+      new webpack.optimize.UglifyJsPlugin({
         compress: { warnings: false },
         warnings: false,
         comments: false
-      })
+      }),
+      ...[
+        new webpack.NamedModulesPlugin()
+      ]
+    ),
+    new WebpackBar()
   ]
 }
