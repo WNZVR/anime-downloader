@@ -3,14 +3,14 @@
   "parser": "babel-eslint",
   "plugins": ["angular"],
   "rules": {
-    "arrow-parens": [2, "as-needed"],
-    "comma-dangle": [2, "never"],
-    "eol-last": [2, "always"],
-    "max-len": [2, 100, 2],
-    "object-curly-spacing": [2, "always"],
-    "object-property-newline": 2,
-    "no-unused-vars": 2,
-    "prefer-const": 2,
-    "quotes": [2, "single"]
+    "arrow-parens": ["error", "as-needed"],
+    "comma-dangle": ["error", "never"],
+    "eol-last": ["error", "always"],
+    "max-len": ["error", 100],
+    "object-curly-spacing": ["error", "always"],
+    "object-property-newline": "error",
+    "no-unused-vars": "error",
+    "prefer-const": "error",
+    "quotes": ["error", "single"]
   }
 }
