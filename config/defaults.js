@@ -1,12 +1,12 @@
-const { join } = require('path')
-const resolveApp = args => join(__dirname, `../${args}`)
+require('dotenv-extended').load({ errorOnMissing: true })
 
-if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development'
+const { join } = require('path')
+
+const projectDir = join(__dirname, '../')
+
+const resolveApp = args => join(projectDir, args)
 
 module.exports = {
-  // We'll only use this for electron's DevTools
-  appEnv: process.env.NODE_ENV,
-
   appDevPort: 4200,
   appDevHostname: 'localhost',
 
@@ -18,5 +18,7 @@ module.exports = {
   appSrc: resolveApp('src'),
   appDist: resolveApp('dist'),
   appReleases: resolveApp('releases'),
-  appIndexHtml: resolveApp('dist/index.html')
+  appIndexHtml: resolveApp('dist/index.html'),
+
+  appTemplate: resolveApp('src/assets/index.ejs')
 }
