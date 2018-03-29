@@ -1,12 +1,43 @@
 const { format } = require('url')
-const {
-  appEnv,
-  appIndexHtml,
-  appLogoPng,
-  appLogoNotif,
-  appTitle
-} = require('./config/defaults')
+const { appIndexHtml, appLogoPng, appLogoNotif, appTitle } = require('./config/defaults')
 const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron')
+const { autoUpdater } = require('electron-updater')
+
+autoUpdater.setFeedURL({
+  provider: 'generic',
+  url: 'https://gitlab.com/eemj/anime-downloader/-/jobs/artifacts/master/raw/dist?job=build',
+  requestHeader: { 'PRIVATE-TOKEN': 'kJRX5QgCyvzx8sBzo6ss' }
+})
+
+autoUpdater.on('checking-for-update', () => {
+  console.log('Checking for updates.')
+})
+
+autoUpdater.on('update-available', () => {
+  console.log('Update available.')
+})
+
+autoUpdater.on('update-not-available', () => {
+  console.log('Update not available.')
+})
+
+autoUpdater.on('error', err => {
+  console.error(err)
+})
+
+autoUpdater.on('download-progress', progressObj => {
+  let logMsg = 'Download speed: ' + progressObj.bytesPerSecond
+  logMsg += ' - Downloaded ' + parseInt(progressObj.percent) + '%'
+  logMsg += ' (' + progressObj.transferred + '/' + progressObj.total + ')'
+  console.log(logMsg)
+})
+
+autoUpdater.on('update-downloaded', () => {
+  console.log('Update downloaded, will install in a second.')
+  setTimeout(() => {
+    autoUpdater.quitAndInstall()
+  }, 1000)
+})
 
 let mainWindow = null
 let mainTray = null
@@ -94,7 +125,10 @@ ipcMain.on('TRAY_ICON', (event, arg) => {
 
 if (app.makeSingleInstance(focusWindow)) app.quit()
 
-app.on('ready', createWindow)
+app.on('ready', async () => {
+  console.log('Creating window..')
+  // createWindow()
+})
 
 app.on('before-quit', () => {
   if (mainWindow) {
@@ -105,7 +139,7 @@ app.on('before-quit', () => {
 })
 
 app.on('will-quit', () => {
-  if (!mainTray.isDestroyed()) {
+  if (mainTray && !mainTray.isDestroyed()) {
     mainTray.destroy()
     mainTray = null
   }
