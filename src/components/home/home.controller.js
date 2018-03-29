@@ -4,17 +4,8 @@ import { join } from 'path'
 import { remote, ipcRenderer } from 'electron'
 import { existsSync, readdirSync } from 'fs'
 
-const { Menu } = remote
-
 class HomeController {
-  constructor (
-    $state,
-    $mdDialog,
-    $rootScope,
-    AnimeService,
-    SettingsService,
-    DirectoryService
-  ) {
+  constructor ($state, $mdDialog, $rootScope, AnimeService, SettingsService, DirectoryService) {
     'ngInject'
 
     this._$state = $state
@@ -33,6 +24,8 @@ class HomeController {
     this.foundAnimes = this._animeService.foundAnimes
 
     this.refreshAnimeUpdates()
+
+    this._homeElement = angular.element(document.querySelector('.main-container'))
   }
 
   refreshAnimeUpdates () {
@@ -55,23 +48,20 @@ class HomeController {
           .alert()
           .clickOutsideToClose()
           .title('Error')
-          .textContent(
-            'Something went wrong, press \'Refresh\' to restart the application.'
-          )
+          .textContent('Something went wrong, press \'Refresh\' to restart the application.')
           .ariaLabel('Error')
           .ok('OK')
       )
     } else {
-      const parent = angular.element(document.querySelector('.md-fab')[0])
       this._$mdDialog.show({
         ariaLabel: 'Add',
         clickOutsideToClose: true,
         escapeToClose: true,
         template: '<add></add>',
-        parent: angular.element(document.body),
+        parent: this._homeElement,
         onRemoving: this.refreshAnimeUpdates(),
-        openFrom: parent,
-        closeTo: parent
+        fullscreen: false,
+        hasBackdrop: false
       })
     }
   }
@@ -80,8 +70,11 @@ class HomeController {
     this._$mdDialog.show({
       ariaLabel: 'Download',
       template: '<download></download>',
-      parent: angular.element(document.body),
-      onRemoving: this.refreshAnimeUpdates()
+      parent: this._homeElement,
+      onRemoving: this.refreshAnimeUpdates(),
+      escapeToClose: false,
+      fullscreen: false,
+      hasBackdrop: false
     })
   }
 
