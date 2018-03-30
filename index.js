@@ -1,52 +1,48 @@
 const { format } = require('url')
 const { appIndexHtml, appLogoPng, appLogoNotif, appTitle } = require('./config/defaults')
-const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron')
-const { autoUpdater } = require('electron-updater')
+const { app, BrowserWindow, Tray, Menu, ipcMain, globalShortcut, dialog } = require('electron')
+const updater = require('electron-updater').autoUpdater
+const logger = require('./lib/logger')('main')
 
-autoUpdater.setFeedURL({
-  provider: 'generic',
-  url: 'https://gitlab.com/eemj/anime-downloader/-/jobs/artifacts/master/raw/dist?job=build',
-  requestHeader: { 'PRIVATE-TOKEN': 'kJRX5QgCyvzx8sBzo6ss' }
+// Updater initial settings
+Object.assign(updater, {
+  autoDownload: false,
+  fullChangelog: false,
+  logger: null
 })
 
-autoUpdater.on('checking-for-update', () => {
-  console.log('Checking for updates.')
-})
-
-autoUpdater.on('update-available', () => {
-  console.log('Update available.')
-})
-
-autoUpdater.on('update-not-available', () => {
-  console.log('Update not available.')
-})
-
-autoUpdater.on('error', err => {
-  console.error(err)
-})
-
-autoUpdater.on('download-progress', progressObj => {
-  let logMsg = 'Download speed: ' + progressObj.bytesPerSecond
-  logMsg += ' - Downloaded ' + parseInt(progressObj.percent) + '%'
-  logMsg += ' (' + progressObj.transferred + '/' + progressObj.total + ')'
-  console.log(logMsg)
-})
-
-autoUpdater.on('update-downloaded', () => {
-  console.log('Update downloaded, will install in a second.')
-  setTimeout(() => {
-    autoUpdater.quitAndInstall()
-  }, 1000)
-})
+const bytesToMb = byte => parseFloat(Math.round(byte / 1024 / 1024)).toFixed(2)
 
 let mainWindow = null
 let mainTray = null
 
+// https://github.com/sindresorhus/electron-is-dev/blob/master/index.js
+const isDev = (() => {
+  const getFromEnv = parseInt(process.env.ELECTRON_IS_DEV, 10) === 1
+  const isEnvSet = 'ELECTRON_IS_DEV' in process.env
+
+  return isEnvSet
+    ? getFromEnv
+    : process.defaultApp || /node_modules[\\/]electron[\\/]/.test(process.execPath)
+})()
+
+logger.info(`Is Development: ${isDev}`)
+
+const shortchuts = (register = true) => {
+  if (!register) return globalShortcut.unregisterAll()
+
+  if (
+    !globalShortcut.register('CmdOrCtrl+Shift+J', () => {
+      if (mainWindow) mainWindow.webContents.toggleDevTools()
+    })
+  ) {
+    logger.error('[hotkey] <CmdOrCtrl+Shift+J> registration failed')
+  }
+}
+
 const focusWindow = () => {
   if (mainWindow) {
-    if (mainWindow.isMinimized()) {
-      mainWindow.restore()
-    }
+    !mainWindow.isMinimized() || mainWindow.restore()
     mainWindow.focus()
   }
 }
@@ -66,15 +62,6 @@ const createTray = () => {
           }
         }
       },
-      {
-        label: 'Toggle Developer Tools',
-        click () {
-          if (mainWindow) {
-            mainWindow.webContents.toggleDevTools()
-          }
-        }
-      },
-      { type: 'separator' },
       {
         label: 'Restore',
         click: focusWindow
@@ -105,6 +92,7 @@ const createWindow = () => {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    shortchuts()
     if (!mainTray) createTray()
   })
 
@@ -126,8 +114,69 @@ ipcMain.on('TRAY_ICON', (event, arg) => {
 if (app.makeSingleInstance(focusWindow)) app.quit()
 
 app.on('ready', async () => {
-  console.log('Creating window..')
-  // createWindow()
+  if (!isDev) {
+    updater.on('checking-for-update', () => {
+      logger.info('Checking for updates...')
+    })
+
+    updater.on('update-available', () => {
+      // @TODO: save into a global variable that the update is available to that the user can decide
+      // to download the new one or not.
+      logger.info('Update is available..')
+      dialog.showMessageBox(
+        {
+          type: 'info',
+          title: 'Anime Downloader',
+          message: 'Found updates, do you want to update now?',
+          buttons: ['No', 'Yes']
+        },
+        buttonIndex => {
+          if (buttonIndex === 1) {
+            return updater.downloadUpdate()
+          }
+          return true
+        }
+      )
+    })
+
+    updater.on('update-not-available', () => {
+      logger.info('No updates available.')
+      createWindow()
+    })
+
+    updater.on('error', error => {
+      logger.error(error)
+
+      dialog.showErrorBox(`Error: ${error ? error.stack || error : 'Unknown'}`)
+    })
+
+    updater.on('download-progress', ({ bytesPerSecond, percent, total, transferred }) => {
+      if (percent === 0) return logger.info('Download started.')
+      else if (percent === 0) return logger.info('Download finished.')
+
+      logger.info(
+        `Downloading @ ${bytesToMb(bytesPerSecond)} MB/s, ${percent}%, ${bytesToMb(
+          transferred
+        )}/${bytesToMb(total)} MB`
+      )
+    })
+
+    updater.on('update-downloaded', () => {
+      logger.info('Update downloaded successfully.')
+      dialog.showMessageBox({
+        title: 'Anime Downloader',
+        message: 'Updates downloaded, application will close to install..'
+      }, () => {
+        setImmediate(() => updater.quitAndInstall())
+      })
+    })
+
+    await updater.checkForUpdates()
+
+    return true
+  }
+
+  createWindow()
 })
 
 app.on('before-quit', () => {
@@ -144,7 +193,10 @@ app.on('will-quit', () => {
     mainTray = null
   }
 
-  if (mainWindow) mainWindow = null
+  if (mainWindow) {
+    mainWindow = null
+    shortchuts(false)
+  }
 })
 
 app.on('activate', () => {
