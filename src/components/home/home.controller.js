@@ -4,6 +4,8 @@ import { join } from 'path'
 import { remote, ipcRenderer } from 'electron'
 import { existsSync, readdirSync } from 'fs'
 
+const { Menu } = remote
+
 class HomeController {
   constructor ($state, $mdDialog, $rootScope, AnimeService, SettingsService, DirectoryService) {
     'ngInject'
@@ -24,8 +26,6 @@ class HomeController {
     this.foundAnimes = this._animeService.foundAnimes
 
     this.refreshAnimeUpdates()
-
-    this._homeElement = angular.element(document.querySelector('.main-container'))
   }
 
   refreshAnimeUpdates () {
@@ -58,10 +58,9 @@ class HomeController {
         clickOutsideToClose: true,
         escapeToClose: true,
         template: '<add></add>',
-        parent: this._homeElement,
-        onRemoving: this.refreshAnimeUpdates(),
-        fullscreen: false,
-        hasBackdrop: false
+        parent: angular.element(document.body),
+        onRemoving: this.refreshAnimeUpdates,
+        fullscreen: false
       })
     }
   }
@@ -70,11 +69,10 @@ class HomeController {
     this._$mdDialog.show({
       ariaLabel: 'Download',
       template: '<download></download>',
-      parent: this._homeElement,
-      onRemoving: this.refreshAnimeUpdates(),
+      parent: angular.element(document.body),
+      onClosing: this.refreshAnimeUpdates,
       escapeToClose: false,
-      fullscreen: false,
-      hasBackdrop: false
+      fullscreen: false
     })
   }
 
