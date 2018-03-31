@@ -1,3 +1,4 @@
+const os = require('os')
 const defaults = require('./defaults')
 const webpack = require('webpack')
 const autoprefixer = require('autoprefixer')
@@ -13,13 +14,15 @@ const isDevelopment = () => process.env.NODE_ENV === 'development'
 const isProduction = (isTrue, isFalse) => (process.env.NODE_ENV === 'production' ? isTrue : isFalse)
 const publicPath = `http://${defaults.appDevHostname}:${defaults.appDevPort}/`
 const defaultEntry = [require.resolve('babel-polyfill'), './app.js']
-const exec = process.argv[1].split('/').pop()
 const startScript = script =>
   spawn('npm', [...`run ${script}`.split(' ')], { shell: true, stdio: 'inherit' })
     .on('close', () => process.exit(0))
     .on('error', spawnError => {
       throw spawnError
     })
+
+let exec = process.argv[1].split(os.platform() === 'win32' ? '\\' : '/').pop()
+if (exec.indexOf('.')) exec = exec.split('.').shift()
 
 module.exports = {
   bail: true,
