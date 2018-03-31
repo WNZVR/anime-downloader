@@ -11,10 +11,15 @@ console.info(`\n\rStage: ${chalk.bold.blue(process.env.NODE_ENV.toUpperCase())}`
 
 const isDevelopment = () => process.env.NODE_ENV === 'development'
 const isProduction = (isTrue, isFalse) => (process.env.NODE_ENV === 'production' ? isTrue : isFalse)
-const publicPath = `http://${defaults.appDevHostname}:${defaults.appDevPort}`
+const publicPath = `http://${defaults.appDevHostname}:${defaults.appDevPort}/`
 const defaultEntry = [require.resolve('babel-polyfill'), './app.js']
-
-let electronOpen = false
+const exec = process.argv[1].split('/').pop()
+const startScript = script =>
+  spawn('npm', [...`run ${script}`.split(' ')], { shell: true, stdio: 'inherit' })
+    .on('close', () => process.exit(0))
+    .on('error', spawnError => {
+      throw spawnError
+    })
 
 module.exports = {
   bail: true,
@@ -28,7 +33,8 @@ module.exports = {
   ]),
   output: {
     filename: `${isProduction('[hash:16]', '[name]')}.js`,
-    path: defaults.appDist
+    path: defaults.appDist,
+    publicPath: isProduction('./', publicPath)
   },
   devServer: {
     publicPath,
@@ -36,11 +42,7 @@ module.exports = {
     contentBase: defaults.appDist,
     stats: 'errors-only',
     after () {
-      spawn('npm', [...'run preview'.split(' ')], { shell: true, stdio: 'inherit' })
-        .on('close', process.exit)
-        .on('error', spawnError => {
-          throw spawnError
-        })
+      startScript('preview')
     }
   },
   module: {
@@ -151,29 +153,25 @@ module.exports = {
       [
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NamedModulesPlugin(),
-        new webpack.LoaderOptionsPlugin({ debug: true }),
-
-        // A small hack that'll launch another instance of
-        // webpack-dev-server once the compiling is done on
-        // the development stage
-        new webpack.ProgressPlugin(percentage => {
-          if (percentage === 1 && !electronOpen) {
-            electronOpen = true
-            spawn('npm', [...'run webpack:server'.split(' ')], { shell: true, stdio: 'inherit' })
-              .on('close', process.exit)
-              .on('error', spawnError => {
-                throw spawnError
-              })
-          }
-        })
+        new webpack.LoaderOptionsPlugin({ debug: true })
       ]
     ),
+    new webpack.ProgressPlugin(percentage => {
+      if (percentage === 1 && exec === 'webpack') {
+        if (
+          process.env.DISABLE_ELECTRON === undefined ||
+          ['0', 'false', 'n', 'no', 'nope'].includes(process.env.DISABLE_ELECTRON.toLowerCase())
+        ) {
+          return startScript(isDevelopment() ? 'webpack:server' : 'preview')
+        }
+      }
+    }),
     new ProgressBarPlugin({
+      complete: 'x',
+      incomplete: '-',
       clear: false,
       renderThrottle: 1,
-      format: `[${chalk.green.bold(':percent')}] - (:current/:total) - ${chalk.underline(
-        ':elapseds'
-      )} - :msg`
+      format: `${chalk.yellow.bold(':percent')} - ${chalk.bold(':elapseds')} - [:bar] - :msg`
     })
   ]
 }
