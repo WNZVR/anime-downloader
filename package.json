@@ -69,6 +69,7 @@
     "chalk": "^2.3.2",
     "cheerio": "^1.0.0-rc.2",
     "dotenv-extended": "^2.0.1",
+    "electron-is-dev": "^0.3.0",
     "electron-updater": "^2.21.4",
     "extract-text-webpack-plugin": "^3.0.0",
     "html-webpack-plugin": "^2.30.1",
@@ -136,5 +137,5 @@
     "webpack:server": "webpack-dev-server --config config/webpack.config.js",
     "webpack": "webpack --config config/webpack.config.js"
   },
-  "version": "1.0.1"
+  "version": "1.0.2"
 }
