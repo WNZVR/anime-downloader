@@ -3,6 +3,7 @@ const { appIndexHtml, appLogoPng, appLogoNotif, appTitle } = require('./config/d
 const { app, BrowserWindow, Tray, Menu, ipcMain, globalShortcut, dialog } = require('electron')
 const updater = require('electron-updater').autoUpdater
 const logger = require('./lib/logger')('main')
+const isDev = require('electron-is-dev')
 
 // Updater initial settings
 Object.assign(updater, {
@@ -15,16 +16,6 @@ const bytesToMb = byte => parseFloat(Math.round(byte / 1024 / 1024)).toFixed(2)
 
 let mainWindow = null
 let mainTray = null
-
-// https://github.com/sindresorhus/electron-is-dev/blob/master/index.js
-const isDev = (() => {
-  const getFromEnv = parseInt(process.env.ELECTRON_IS_DEV, 10) === 1
-  const isEnvSet = 'ELECTRON_IS_DEV' in process.env
-
-  return isEnvSet
-    ? getFromEnv
-    : process.defaultApp || /node_modules[\\/]electron[\\/]/.test(process.execPath)
-})()
 
 logger.info(`Is Development: ${isDev}`)
 
