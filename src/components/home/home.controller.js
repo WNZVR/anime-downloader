@@ -80,7 +80,7 @@ class HomeController {
       ariaLabel: 'Download',
       template: '<download></download>',
       parent: angular.element(document.body),
-      onClosing: this.refreshAnimeUpdates.bind(this),
+      onRemoving: this.refreshAnimeUpdates.bind(this),
       escapeToClose: false,
       fullscreen: false
     })
