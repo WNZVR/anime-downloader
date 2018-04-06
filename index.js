@@ -1,6 +1,19 @@
 const { format } = require('url')
-const { appIndexHtml, appLogoPng, appLogoNotif, appTitle } = require('./config/defaults')
-const { app, BrowserWindow, Tray, Menu, ipcMain, globalShortcut, dialog } = require('electron')
+const {
+  appIndexHtml,
+  appLogoPng,
+  appLogoNotif,
+  appTitle
+} = require('./config/defaults')
+const {
+  app,
+  BrowserWindow,
+  Tray,
+  Menu,
+  ipcMain,
+  globalShortcut,
+  dialog
+} = require('electron')
 const updater = require('electron-updater').autoUpdater
 const logger = require('./lib/logger')('main')
 const isDev = require('electron-is-dev')
@@ -24,7 +37,10 @@ const shortchuts = (register = true) => {
 
   if (
     !globalShortcut.register('CmdOrCtrl+Shift+J', () => {
-      if (mainWindow) mainWindow.webContents.toggleDevTools()
+      // Make sure the window is focused when we execute the shortchut.
+      if (mainWindow && mainWindow.getFocusedWindow()) {
+        mainWindow.webContents.toggleDevTools()
+      }
     })
   ) {
     logger.error('[hotkey] <CmdOrCtrl+Shift+J> registration failed')
@@ -141,25 +157,33 @@ app.on('ready', async () => {
       dialog.showErrorBox(`Error: ${error ? error.stack || error : 'Unknown'}`)
     })
 
-    updater.on('download-progress', ({ bytesPerSecond, percent, total, transferred }) => {
-      if (percent === 0) return logger.info('Download started.')
-      else if (percent === 0) return logger.info('Download finished.')
+    updater.on(
+      'download-progress',
+      ({ bytesPerSecond, percent, total, transferred }) => {
+        if (percent === 0) return logger.info('Download started.')
+        else if (percent === 0) return logger.info('Download finished.')
 
-      logger.info(
-        `Downloading @ ${bytesToMb(bytesPerSecond)} MB/s, ${percent}%, ${bytesToMb(
-          transferred
-        )}/${bytesToMb(total)} MB`
-      )
-    })
+        logger.info(
+          `Downloading @ ${bytesToMb(
+            bytesPerSecond
+          )} MB/s, ${percent}%, ${bytesToMb(transferred)}/${bytesToMb(
+            total
+          )} MB`
+        )
+      }
+    )
 
     updater.on('update-downloaded', () => {
       logger.info('Update downloaded successfully.')
-      dialog.showMessageBox({
-        title: 'Anime Downloader',
-        message: 'Updates downloaded, application will close to install..'
-      }, () => {
-        setImmediate(() => updater.quitAndInstall())
-      })
+      dialog.showMessageBox(
+        {
+          title: 'Anime Downloader',
+          message: 'Updates downloaded, application will close to install..'
+        },
+        () => {
+          setImmediate(() => updater.quitAndInstall())
+        }
+      )
     })
 
     await updater.checkForUpdates()
