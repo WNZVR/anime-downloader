@@ -37,8 +37,9 @@ const shortchuts = (register = true) => {
 
   if (
     !globalShortcut.register('CmdOrCtrl+Shift+J', () => {
-      // Make sure the window is focused when we execute the shortchut.
-      if (mainWindow && mainWindow.getFocusedWindow()) {
+      // Since this is the only window it has to be the one we're gonna display
+      const focusedWindow = BrowserWindow.getFocusedWindow()
+      if (mainWindow && focusedWindow) {
         mainWindow.webContents.toggleDevTools()
       }
     })
