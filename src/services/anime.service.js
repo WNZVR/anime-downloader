@@ -1,23 +1,30 @@
+import scraper from 'anime-scrape'
+
 class AnimeService {
-  constructor ($rootDialog) {
-    this._$rootDialog = $rootDialog
+  animeList = []
+  animeListUpdate = null
 
-    this.animeList = []
-    this.foundAnimes = []
-    this.refreshUpdates = this.refreshUpdates.bind(this)
-  }
+  foundAnimes = []
 
-  refreshUpdates () {
-    let updates = 0
-    if (this.foundAnimes.length) {
-      updates = this.foundAnimes.reduce(
-        (a, b) => a.episodes.length + b.episodes.length
-      )
+  updateList = async () => {
+    if (
+      (!this.animeList.length && this.animeListUpdate) ||
+      !this.animeList.length ||
+      this.animeListUpdate >= Date.now() + 1 * 60 * 60 * 1000
+    ) {
+      const animeList = await scraper.getList()
+
+      for (const anime of animeList) {
+        if (!this.animeList.includes(anime)) {
+          this.animeList.push(anime)
+        }
+      }
+
+      this.animeListUpdate = Date.now()
     }
-    this._$rootDialog.updates = updates
+
+    return this.animeList
   }
 }
-
-AnimeService.$inject = ['$rootScope']
 
 export default AnimeService
