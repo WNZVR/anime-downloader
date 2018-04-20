@@ -155,7 +155,7 @@ app.on('ready', async () => {
     updater.on('error', error => {
       logger.error(error)
 
-      dialog.showErrorBox(`Error: ${error ? error.stack || error : 'Unknown'}`)
+      dialog.showErrorBox(`Error: ${error ? error.message || error : 'Unknown'}`)
     })
 
     updater.on(

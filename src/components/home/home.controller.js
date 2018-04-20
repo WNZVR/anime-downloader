@@ -90,7 +90,7 @@ class HomeController {
               .alert()
               .clickOutsideToClose()
               .title('Error')
-              .textContent(error.stack || error)
+              .textContent(error.message || error)
               .ariaLabel('Error')
               .ok('OK')
           )

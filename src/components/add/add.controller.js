@@ -38,7 +38,7 @@ class AddController {
           .alert()
           .clickOutsideToClose()
           .title('Error')
-          .textContent(e.stack || e)
+          .textContent(e.message || e)
           .ariaLabel('Error')
           .ok('OK')
       )

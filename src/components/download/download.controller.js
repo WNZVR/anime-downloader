@@ -190,7 +190,7 @@ class DownloadController {
           .clickOutsideToClose()
           .alert()
           .title('Error')
-          .textContent(error.stack || error)
+          .textContent(error.message || error)
           .ariaLabel('ErrorDialog')
           .ok('OK')
       )
