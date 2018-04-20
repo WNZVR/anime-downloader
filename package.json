@@ -137,7 +137,7 @@
     "webpack:server": "webpack-dev-server --config config/webpack.config.js",
     "webpack": "webpack --config config/webpack.config.js"
   },
-  "version": "1.0.6",
+  "version": "1.0.7",
   "eslintConfig": {
     "extends": "standard",
     "parser": "babel-eslint",
