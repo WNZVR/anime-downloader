@@ -1,15 +1,8 @@
-import scraper from 'anime-scrape'
 import { existsSync } from 'fs'
+import { remote } from 'electron'
 
 class LoadController {
-  constructor (
-    $mdDialog,
-    $state,
-    $rootScope,
-    DirectoryService,
-    AnimeService,
-    SettingsService
-  ) {
+  constructor ($mdDialog, $state, $rootScope, DirectoryService, AnimeService, SettingsService) {
     this._$mdDialog = $mdDialog
     this._$state = $state
     this._$rootScope = $rootScope
@@ -27,18 +20,28 @@ class LoadController {
   }
 
   async init () {
-    this._$rootScope.updates = undefined
+    try {
+      this._$rootScope.updates = undefined
 
-    let animeList = this._animeService.animeList
-    if (!animeList.length) {
-      animeList = await scraper.getList()
-      this._animeService.animeList = animeList
+      await this._animeService.updateList()
+
+      const foundAnimes = await this._directoryService.scan()
+      if (foundAnimes.length) this._animeService.foundAnimes = foundAnimes
+
+      this._$state.go('home')
+    } catch (e) {
+      this._$mdDialog.show(
+        this._$mdDialog
+          .alert()
+          .clickOutsideToClose()
+          .title('Error')
+          .textContent(e.stack || e)
+          .ariaLabel('Error')
+          .ok('OK'),
+      ).then(() => {
+        if (remote && remote.app) remote.app.quit()
+      })
     }
-    const foundAnimes = await this._directoryService.scan()
-    if (foundAnimes.length) {
-      this._animeService.foundAnimes = foundAnimes
-    }
-    this._$state.go('home')
   }
 }
 
