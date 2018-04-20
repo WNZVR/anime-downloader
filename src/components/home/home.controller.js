@@ -1,20 +1,13 @@
-import rimraf from 'rimraf'
+import { readdirSync } from 'fs'
+import { remove, pathExistsSync } from 'fs-extra'
 import angular from 'angular'
 import { join } from 'path'
 import { remote, ipcRenderer } from 'electron'
-import { existsSync, readdirSync } from 'fs'
 
 const { Menu } = remote
 
 class HomeController {
-  constructor (
-    $state,
-    $mdDialog,
-    $rootScope,
-    AnimeService,
-    SettingsService,
-    DirectoryService
-  ) {
+  constructor ($state, $mdDialog, $rootScope, AnimeService, SettingsService, DirectoryService) {
     'ngInject'
 
     this._$state = $state
@@ -56,9 +49,7 @@ class HomeController {
           .alert()
           .clickOutsideToClose()
           .title('Error')
-          .textContent(
-            'Something went wrong, press \'Refresh\' to restart the application.'
-          )
+          .textContent('Something went wrong, press \'Refresh\' to restart the application.')
           .ariaLabel('Error')
           .ok('OK')
       )
@@ -91,8 +82,8 @@ class HomeController {
   }
 
   cleanAnime (path, link) {
-    if (existsSync(path)) {
-      return rimraf(path, error => {
+    if (pathExistsSync(path)) {
+      return remove(path, error => {
         if (error) {
           return this._$mdDialog.show(
             this._$mdDialog
@@ -105,9 +96,7 @@ class HomeController {
           )
         }
         this.foundAnimes.splice(
-          this.foundAnimes.indexOf(
-            this.foundAnimes.find(anime => anime.link === link)
-          ),
+          this.foundAnimes.indexOf(this.foundAnimes.find(anime => anime.link === link)),
           1
         )
         this.refreshAnimeUpdates()
@@ -122,7 +111,7 @@ class HomeController {
       {
         label: 'Delete',
         click: () => {
-          if (existsSync(animePath)) {
+          if (pathExistsSync(animePath)) {
             if (readdirSync(animePath).length) {
               const confirm = this._$mdDialog
                 .confirm()
