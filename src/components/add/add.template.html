@@ -17,12 +17,12 @@
                   class="add-input"
                   md-input-name="autocompleteField"
                   md-selected-item="add.selectedItem"
-                  md-selected-item-change="add.selectedItemChanged(add.selectedItem)"
+                  md-selected-item-change="add.setStatus(null)"
                   md-search-text="add.searchText"
-                  md-search-text-change="add.searchTextChanged(add.searchText)"
+                  md-search-text-change="add.setStatus(null)"
                   md-items="item in add.querySearch(add.searchText)"
                   md-item-text="item.display"
-                  md-min-length="0"
+                  md-min-length="1"
                   md-autofocus>
                   <md-item-template>
                       <span md-highlight-text="add.searchText" md-highlight-flags="^i">{{ item.display }}</span>

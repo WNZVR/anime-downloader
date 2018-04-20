@@ -9,44 +9,40 @@ class AddController {
     this._directoryService = DirectoryService
 
     this.path = this._directoryService.path
-    this.foundAnimes = this._animeService.foundAnimes
 
-    const { animeList } = this._animeService
+    const { foundAnimes, animeList } = this._animeService
+    this.foundAnimes = foundAnimes
 
-    this.animes = animeList.map(({ link, title }) => ({
-      value: link,
-      display: title
-    }))
+    this.animes = animeList.map(({ link: value, title: display }) => ({ value, display }))
     this.fail = null
-    this.searchTextChanged = this.resetStatus.bind(this)
-    this.selectedItemChanged = this.resetStatus.bind(this)
   }
 
   async add () {
-    if (!this.selectedItem) {
-      return this.setStatus('You must have a selected anime.')
-    }
+    if (!this.selectedItem) return this.setStatus('You must have a selected anime.')
     const { value } = this.selectedItem
-    if (this.foundAnimes.find(({ link }) => link === value)) {
+    if (this.foundAnimes.find(anime => anime.link === value)) {
       return this.setStatus('This anime is already in your list.')
     }
-    const animeDetail = await scraper.getDetail(value)
-    if (!animeDetail.episodes.length) {
-      return this.setStatus('This anime is not supported for download.')
+    try {
+      const animeDetail = await scraper.getDetail(value)
+      if (!animeDetail.episodes.length) {
+        return this.setStatus('This anime is not supported for download.')
+      }
+      const animeDir = join(this.path, animeDetail.link)
+      if (!existsSync(animeDir)) mkdirSync(animeDir)
+      this.foundAnimes.push(animeDetail)
+      this.cancel()
+    } catch (e) {
+      this._$mdDialog.show(
+        this._$mdDialog
+          .alert()
+          .clickOutsideToClose()
+          .title('Error')
+          .textContent(e.stack || e)
+          .ariaLabel('Error')
+          .ok('OK')
+      )
     }
-    this.foundAnimes.push(animeDetail)
-    this._animeService.foundAnimes = this.foundAnimes
-    const animeDir = join(this.path, animeDetail.link)
-    if (!existsSync(animeDir)) mkdirSync(animeDir)
-    this.cancel()
-  }
-
-  setStatus (value) {
-    this.fail = value
-  }
-
-  resetStatus () {
-    this.fail = null
   }
 
   cancel () {
@@ -56,10 +52,13 @@ class AddController {
   querySearch (query) {
     return query
       ? this.animes.filter(
-        ({ display }) =>
-          display.toLowerCase().indexOf(query.toLowerCase()) === 0
+        ({ display }) => display.toLowerCase().indexOf(query.trim().toLowerCase()) !== ~0
       )
       : this.animes
+  }
+
+  setStatus (value) {
+    this.fail = value
   }
 }
 
