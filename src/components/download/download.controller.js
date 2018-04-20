@@ -12,13 +12,7 @@ const homePath = app.getPath('home')
 const toMB = value => (value / 1024 / 1024).toFixed(2)
 
 class DownloadController {
-  constructor (
-    $mdDialog,
-    $scope,
-    AnimeService,
-    DirectoryService,
-    SettingsService
-  ) {
+  constructor ($mdDialog, $scope, AnimeService, DirectoryService, SettingsService) {
     'ngInject'
 
     this._$mdDialog = $mdDialog
@@ -30,25 +24,21 @@ class DownloadController {
     const { foundAnimes } = this._animeService
 
     this.path = this._directoryService.path
-    this.displayPath = this.path.startsWith(homePath)
-      ? this.path.replace(homePath, '~')
-      : this.path
+    this.displayPath = this.path.startsWith(homePath) ? this.path.replace(homePath, '~') : this.path
     this.isDownloading = false
     this.pendingCancel = false
-    this.animes = foundAnimes
-      .filter(({ episodes }) => episodes.length)
-      .map(anime => ({
-        ...anime,
-        ...{
-          totalPercentage: 0,
-          totalDownloads: anime.episodes.length,
-          download: {
-            fileSize: null,
-            currFileSize: null,
-            currDlSpeed: null
-          }
+    this.animes = foundAnimes.filter(({ episodes }) => episodes.length).map(anime => ({
+      ...anime,
+      ...{
+        totalPercentage: 0,
+        totalDownloads: anime.episodes.length,
+        download: {
+          fileSize: null,
+          currFileSize: null,
+          currDlSpeed: null
         }
-      }))
+      }
+    }))
   }
 
   $onInit () {
@@ -139,8 +129,7 @@ class DownloadController {
         return
       }
 
-      const downloadIndex =
-        currentAnime.totalDownloads - currentAnime.episodes.length + percent
+      const downloadIndex = currentAnime.totalDownloads - currentAnime.episodes.length + percent
       const totalPercentage = downloadIndex / currentAnime.totalDownloads * 100
 
       this.animes[0].totalPercentage = totalPercentage
@@ -177,11 +166,7 @@ class DownloadController {
         .digest()
         .toString('hex')
         .toLowerCase()
-      console.log(
-        `Episode ${episodes[0]} -> SHA256: ${shaChecksum}, MD5 -> ${
-          md5Checksum
-        }`
-      )
+      console.log(`Episode ${episodes[0]} -> SHA256: ${shaChecksum}, MD5 -> ${md5Checksum}`)
       currentAnime.episodes.splice(0, 1)
       this.download()
     })
@@ -205,9 +190,7 @@ class DownloadController {
           .clickOutsideToClose()
           .alert()
           .title('Error')
-          .textContent(
-            error.startsWith('Error') ? error.substr(6, error.length) : error
-          )
+          .textContent(error.stack || error)
           .ariaLabel('ErrorDialog')
           .ok('OK')
       )
